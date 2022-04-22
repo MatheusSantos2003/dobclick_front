@@ -50,7 +50,7 @@ const ProdutosPage = () => {
               titleAria: "Mostrar/Esconder Colunas da Tabela",
             },
             selectedRows: {
-              text: "Coluna(s) selecionada",
+              text: "Coluna(s) selecionada(s)",
               delete: "Deletar",
               deleteAria: "Deletar linhas selecionadas",
             },
@@ -58,32 +58,20 @@ const ProdutosPage = () => {
     };
 
     function showSelected(currentRowsSelected: any[], allRowsSelected: any[], rowsSelected?: any[]) : void{
-        console.log(rowsSelected)
+        console.log(allRowsSelected)
 
-        // if(allRowsSelected.length == 0){
-        //     if(!idsSelecionados.includes(currentRowsSelected[0].index)){
-        //         idsSelecionados.push(currentRowsSelected[0].index);
-        //     }else{
-        //         let index = idsSelecionados.indexOf(currentRowsSelected[0].index)
-        //         idsSelecionados.splice(index,1);
-        //     }
-        // }else{
-           
-        // }
 
-       
-        // console.log(idsSelecionados);
     }
 
     return (
         <>
 
-            <h2> Produtos </h2>
+          <h2> Produtos </h2>
 
 
         
                 <MUIDataTable
-                    title={"Employee List"}
+                    title={"Lista De Produtos"}
                     data={data}
                     columns={columns}
                     options={options}

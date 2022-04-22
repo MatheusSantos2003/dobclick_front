@@ -211,9 +211,9 @@ const Layout: React.FC = ({ children }) => {
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        <Container>
+       <div className="container-fluid">
           {children}
-        </Container>
+       </div>
       </Main>
     </Box>
   );
