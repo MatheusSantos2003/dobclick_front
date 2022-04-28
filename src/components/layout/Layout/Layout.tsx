@@ -185,10 +185,10 @@ const Layout: React.FC = ({ children }) => {
             </ListItem>
           </Link>
 
-          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/produtos"}>
+          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/estoque"}>
             <ListItem button>
               <ListItemText >
-                Produtos
+                Estoque
               </ListItemText>
               <ListItemIcon>
                 <FontAwesomeIcon icon={faBoxArchive} color='white' ></FontAwesomeIcon>
