@@ -1,4 +1,5 @@
 
+import { Card } from "@mui/material";
 import Chart from "react-apexcharts";
 import { ChartType } from "../../models/ChartOptions.model";
 
@@ -84,7 +85,7 @@ var graficoEstoqueCritico: ChartType = {
     series: [44, 55, 41, 17, 15],
 
     responsive: [{
-        breakpoint:  1000,
+        breakpoint: 1000,
         options: {
             chart: {
                 width: "100%"
@@ -97,6 +98,42 @@ var graficoEstoqueCritico: ChartType = {
 
 }
 
+var graficoLinha: ChartType = {
+    
+    options: {
+        title: {
+            text: "Produto Mais Vendido da seman",
+            align: 'left',
+            margin: 10,
+            offsetX: 0,
+            offsetY: 0,
+            floating: false,
+            style: {
+                fontSize: '14px',
+                fontWeight: 'bold',
+                fontFamily: undefined,
+                color: '#263238'
+            },
+        },
+        xaxis: {
+            categories: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
+          },
+    },
+    type: "line",
+    series: [{
+        name: "Camisa Polo GG",
+        data: [10,15,12,25,50]
+    }],
+    title: {
+        text: "Produto Mais Vendido da Semana",
+        align: 'left',
+        margin: 10,
+    }
+
+
+
+}
+
 function Home() {
     return (
         <>
@@ -104,30 +141,51 @@ function Home() {
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-6 col-lg-6 col-sm-12 py-2">
-
-                        <Chart
-                            className="border border-1"
-                            options={graficoSemanaOptions.options}
-                            series={graficoSemanaOptions.series}
-                            type={graficoSemanaOptions.type}
-                            width={"100%"}
-                            height={380}
-             
-
-                        />
+                        <Card raised={true} sx={{ height: 380 }}>
+                            <Chart
+                                options={graficoSemanaOptions.options}
+                                series={graficoSemanaOptions.series}
+                                type={graficoSemanaOptions.type}
+                                width={"100%"}
+                                height={380}
+                            />
+                        </Card>
 
                     </div>
                     <div className="col-md-6 col-lg-6 col-sm-12 py-2">
+                        <Card raised={true} sx={{ height: 380 }}>
+                            <Chart
+                                options={graficoEstoqueCritico.options}
+                                series={graficoEstoqueCritico.series}
+                                type={graficoEstoqueCritico.type}
+                                width={"100%"}
+                                height={380}
+                            />
+                        </Card>
+                    </div>
 
-                        <Chart
-                            className="border border-1"
-                            options={graficoEstoqueCritico.options}
-                            series={graficoEstoqueCritico.series}
-                            type={graficoEstoqueCritico.type}
-                            width={"100%"}
-                            height={380}
-                        />
+                    <div className="col-md-6 col-lg-6 col-sm-12 py-2">
+                        <Card raised={true} sx={{ height: 380 }}>
+                            <Chart
+                                options={graficoLinha.options}
+                                series={graficoLinha.series}
+                                type={graficoLinha.type}
+                                width={"100%"}
+                                height={380}
+                            />
+                        </Card>
+                    </div>
 
+                    <div className="col-md-6 col-lg-6 col-sm-12 py-2">
+                        <Card raised={true} sx={{ height: 380 }}>
+                            <Chart
+                                options={graficoEstoqueCritico.options}
+                                series={graficoEstoqueCritico.series}
+                                type={graficoEstoqueCritico.type}
+                                width={"100%"}
+                                height={380}
+                            />
+                        </Card>
                     </div>
                 </div>
             </div>
