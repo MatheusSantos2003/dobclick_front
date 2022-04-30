@@ -1,20 +1,64 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 const EstoquePage = () => {
 
+  //Data Table Options
+  const [data, setData] = useState([
+    {
+      "codigo": "001",
+      "descricao": "Bermuda Jeans",
+      "tamanho": "M",
+      "genero": "1",
+      "cor": "Azul"
+    }
+  ]);
+  var columns = [
+    {
+      name: "codigo",
+      label: "Código",
+      options: {
+        filter: true,
+        sort: true,
+      }
+    },
+    {
+      name: "descricao",
+      label: "Descrição",
+      options: {
+        filter: true,
+        sort: true,
+      }
+    },
+    {
+      name: "tamanho",
+      label: "Tamanho",
+      options: {
+        filter: true,
+        sort: true,
+      }
+    },
+    {
+      name: "cor",
+      label: "Cor",
+      options: {
+        filter: true,
+        sort: true,
+      }
+    },
+    {
+      name: "genero",
+      label: "Gênero",
+      options: {
+        filter: true,
+        sort: true,
+      }
+    },
+  ]
+
   var idsSelecionados: number[] = [];
-
-
-  const columns = ["Nome", "Quantidade", "Tamanho"];
-
-  const data = [
-    ["Camisa", 10, "GG"],
-    ["Camisa2", 48, "M"],
-    ["Calça Jeans Skinny", 125, "M"],
-    ["Camisa Polo", 100, "42"],
-  ];
 
   const options: MUIDataTableOptions = {
     filterType: 'checkbox',
@@ -60,20 +104,41 @@ const EstoquePage = () => {
   };
 
   function showSelected(currentRowsSelected: any[], allRowsSelected: any[], rowsSelected?: any[]): void {
-    console.log(allRowsSelected)
-
-
+    console.log("currentRowsSelected :");
+    console.log(currentRowsSelected)
+    console.log("allRowsSelected:");
+    console.log(allRowsSelected);
+    console.log("rowsSelected: ");
+    console.log(allRowsSelected);
   }
 
-  const [openModalAddProduto, setopenModalAddProduto] = useState(false);
+  //  /DataTableOptions
 
+
+  const [openModalAddProduto, setopenModalAddProduto] = useState(false);
   const handleClickOpen = () => {
     setopenModalAddProduto(true);
   };
-
   const handleClose = () => {
     setopenModalAddProduto(false);
   };
+
+
+
+  const { register, handleSubmit, reset } = useForm();
+  const onSubmit = (values: any) => {
+    setData([...data, {
+      "codigo": values.codigo,
+      "descricao": values.descricao,
+      "tamanho": values.tamanho,
+      "genero": values.genero,
+      "cor": values.cor
+    }]);
+    reset();
+  }
+
+
+
 
 
   return (
@@ -94,30 +159,30 @@ const EstoquePage = () => {
         options={options}
       />
       <Dialog open={openModalAddProduto} onClose={handleClose} fullWidth={true} maxWidth={"lg"}>
-        <DialogTitle align={"center"}>Cadastrar Produtos</DialogTitle>
+        <DialogTitle sx={{ textAlign: "center" }}>Cadastrar Produtos</DialogTitle>
         <DialogContent>
 
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="row">
               <div className="col-6 mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Descrição</label>
-                <input type="email" placeholder="Descrição" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                <label htmlFor="exampleInputPassword1" className="form-label">Código</label>
+                <input {...register("codigo")} type="text" placeholder="Código" className="form-control" id="exampleInputPassword1" />
 
               </div>
               <div className="col-6 mb-3">
-                <label htmlFor="exampleInputPassword1" className="form-label">Código</label>
-                <input type="password" placeholder="Código" className="form-control" id="exampleInputPassword1" />
+                <label htmlFor="exampleInputEmail1" className="form-label">Descrição</label>
+                <input {...register("descricao")} type="text" placeholder="Descrição" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
               </div>
             </div>
             <div className="row">
               <div className="col-3 mb-3">
                 <label htmlFor="exampleInputEmail1" className="form-label">Tamanho</label>
-                <input type="email" className="form-control" placeholder="Tamanho" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                <input {...register("tamanho")} type="text" className="form-control" placeholder="Tamanho" id="exampleInputEmail1" aria-describedby="emailHelp" />
               </div>
               <div className="col-3 mb-3">
                 <label htmlFor="exampleInputEmail1" className="form-label">Gênero</label>
-                <select className="form-select" name="" id="">
-                  <option value="0" selected></option>
+                <select {...register("genero")} className="form-select" name="" id="">
+                  <option value="0" ></option>
                   <option value="1">Masculino</option>
                   <option value="2">Feminino</option>
                   <option value="3">Sem Gênero</option>
@@ -125,44 +190,40 @@ const EstoquePage = () => {
               </div>
               <div className="col-3 mb-3">
                 <label htmlFor="exampleInputEmail1" className="form-label">Cor</label>
-                <input type="email" className="form-control" placeholder="Cor" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                <input {...register("cor")} type="text" className="form-control" placeholder="Cor" id="exampleInputEmail1" aria-describedby="emailHelp" />
               </div>
               <div className="col-3 mb-3">
                 <label htmlFor="exampleInputEmail1" className="form-label">Marca</label>
-                <select className="form-select" name="" id="">
-                  <option value="0" selected></option>
+                <select {...register("marca")} className="form-select" name="" id="">
+                  <option value="0" ></option>
                   <option value="1">Marca 1</option>
                   <option value="2">Marca 2</option>
                   <option value="3">Marca 3</option>
                 </select>
               </div>
-       
+
             </div>
             <div className="row">
               <div className="col-2 mb-3">
                 <label htmlFor="exampleInputEmail1" className="form-label">Estoque</label>
-                <input type="number" className="form-control" value={0} id="exampleInputEmail1" aria-describedby="emailHelp" />
+                <input {...register("estoque")} type="number" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
               </div>
               <div className="col-8 mb-3">
                 <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
-                <select className="form-select" name="" id="">
-                  <option value="0" selected></option>
+                <select {...register("fornecedor")} className="form-select" name="" id="">
+                  <option value="0"></option>
                   <option value="1">Fornecedor 1</option>
                   <option value="2">Fornecedor 2</option>
                   <option value="3">Fornecedor 3</option>
                 </select>
               </div>
             </div>
-
-
-
-
+            <div className="d-flex justify-content-end align-items-end">
+              <button className="btn btn-danger mx-1" onClick={handleClose}>Cancelar</button>
+              <button className="btn btn-success mx-1" placeholder="" onClick={handleClose}> Criar Produto </button>
+            </div>
           </form>
         </DialogContent>
-        <DialogActions>
-          <button className="btn btn-danger" onClick={handleClose}>Cancelar</button>
-          <button className="btn btn-success" onClick={handleClose}>Criar Produto</button>
-        </DialogActions>
       </Dialog>
 
     </>
