@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import Preloader from "../../components/preloader/Preloader";
 
 const EstoquePage = () => {
 
@@ -12,7 +13,8 @@ const EstoquePage = () => {
       "descricao": "Bermuda Jeans",
       "tamanho": "M",
       "genero": "1",
-      "cor": "Azul"
+      "cor": "Azul",
+      "estoque": "100"
     }
   ]);
   var columns = [
@@ -52,8 +54,16 @@ const EstoquePage = () => {
       name: "genero",
       label: "Gênero",
       options: {
-        filter: true,
-        sort: true,
+        filter: false,
+        sort: false,
+      }
+    },
+    {
+      name: "estoque",
+      label: "Estoque",
+      options: {
+        filter: false,
+        sort: false,
       }
     },
   ]
@@ -116,23 +126,45 @@ const EstoquePage = () => {
 
 
   const [openModalAddProduto, setopenModalAddProduto] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
   const handleClickOpen = () => {
     setopenModalAddProduto(true);
   };
+
   const handleClose = () => {
+    reset();
     setopenModalAddProduto(false);
   };
 
 
+  const ModalAddProdutoCancelar = () => {
+    reset();
+    setopenModalAddProduto(false);
+  }
 
-  const { register, handleSubmit, reset } = useForm();
-  const onSubmit = (values: any) => {
+  function delay(delayInms:number) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        setisLoading(false);
+        resolve(2);
+      }, delayInms);
+    });
+  }
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const onSubmit = async (values: any) => {
+
+    setisLoading(true);
+    await delay(1500);
+
+    handleClose();
     setData([...data, {
       "codigo": values.codigo,
       "descricao": values.descricao,
       "tamanho": values.tamanho,
       "genero": values.genero,
-      "cor": values.cor
+      "cor": values.cor,
+      "estoque": values.estoque
     }]);
     reset();
   }
@@ -142,6 +174,7 @@ const EstoquePage = () => {
 
 
   return (
+
     <>
 
       <h2> Estoque </h2>
@@ -158,71 +191,144 @@ const EstoquePage = () => {
         columns={columns}
         options={options}
       />
+
+
+
+
+
+      {/* Modal de Adicionar Produto */}
       <Dialog open={openModalAddProduto} onClose={handleClose} fullWidth={true} maxWidth={"lg"}>
-        <DialogTitle sx={{ textAlign: "center" }}>Cadastrar Produtos</DialogTitle>
+        {!isLoading &&
+          <DialogTitle sx={{ textAlign: "center" }}>Cadastrar Produtos</DialogTitle>
+        }
         <DialogContent>
+          {isLoading &&
+            <div className="m-5 p-5">
+              <Preloader />
+            </div>
+          }
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="row">
-              <div className="col-6 mb-3">
-                <label htmlFor="exampleInputPassword1" className="form-label">Código</label>
-                <input {...register("codigo")} type="text" placeholder="Código" className="form-control" id="exampleInputPassword1" />
+          {!isLoading &&
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="row">
+                <div className="col-6 mb-3">
+                  <label
+                    htmlFor="exampleInputPassword1"
+                    className="form-label"
+                  >Código
+                  </label>
+                  <input
+                    {...register("codigo", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="text"
+                    placeholder="Código"
+                    className={`form-control ${errors.codigo?.message != null ? "is-invalid" : ""}`}
+                    id="exampleInputPassword1" />
+                  {errors.codigo && <p className="text-danger">{errors.codigo.message}</p>}
+                </div>
+                <div className="col-6 mb-3">
+                  <label htmlFor="exampleInputEmail1" className="form-label">Descrição</label>
+                  <input {...register("descricao", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="text"
+                    placeholder="Descrição"
+                    className={`form-control ${errors.descricao?.message != null ? "is-invalid" : ""}`}
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                  {errors.descricao && <p className="text-danger">{errors.descricao?.message}</p>}
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-3 mb-3">
+                  <label htmlFor="exampleInputEmail1"
+                    className="form-label">Tamanho
+                  </label>
+                  <input
+                    {...register("tamanho", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="text"
+
+                    className={`form-control ${errors.tamanho?.message != null ? "is-invalid" : ""}`}
+                    placeholder="Tamanho"
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                </div>
+                <div className="col-3 mb-3">
+                  <label htmlFor="exampleInputEmail1" className="form-label">Gênero</label>
+                  <select
+                    {...register("genero", { required: { value: true, message: "Campo Necessário!" } })}
+                    className={`form-select ${errors.genero?.message != null ? "is-invalid" : ""}`}
+                   >
+                    <option value=""  ></option>
+                    <option value="1">Masculino</option>
+                    <option value="2">Feminino</option>
+                    <option value="3">Sem Gênero</option>
+                  </select>
+                  {errors.genero && <p className="text-danger">{errors.genero?.message}</p>}
+                </div>
+                <div className="col-3 mb-3">
+                  <label
+                    htmlFor="exampleInputEmail1"
+                    className="form-label">
+                    Cor
+                  </label>
+                  <input
+                    {...register("cor", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="text"
+                    className={`form-control ${errors.cor?.message != null ? "is-invalid" : ""}`}
+                    placeholder="Cor"
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                </div>
+                <div className="col-3 mb-3">
+                  <label
+                    htmlFor="exampleInputEmail1"
+                    className="form-label">
+                    Marca
+                  </label>
+                  <select
+                    {...register("marca", { required: { value: true, message: "Campo Necessário!" } })}
+                    className={`form-select ${errors.marca?.message != null ? "is-invalid" : ""}`}
+                   >
+                    <option key={''} value=''></option>
+                    <option key={1} value={1}>Marca 1</option>
+                    <option key={2} value={2}>Marca 3</option>
+                    <option key={3} value={3}>Marca 2</option>
+                  </select>
+
+                </div>
 
               </div>
-              <div className="col-6 mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Descrição</label>
-                <input {...register("descricao")} type="text" placeholder="Descrição" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+              <div className="row">
+                <div className="col-2 mb-3">
+                  <label
+                    htmlFor="exampleInputEmail1"
+                    className="form-label">
+                    Estoque
+                  </label>
+                  <input
+                    {...register("estoque", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="number"
+                    className={`form-control ${errors.estoque?.message != null ? "is-invalid" : ""}`}
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                </div>
+                <div className="col-8 mb-3">
+                  <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
+                  <select  
+                  {...register("fornecedor", { required: { value: true, message: "Campo Necessário!" } })} 
+                  className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}>
+                    <option key={''} value=''></option>
+                    <option key={1} value={1}>Fornecedor 1</option>
+                    <option key={2} value={2}>Fornecedor 2</option>
+                    <option key={3} value={3}>Fornecedor 3</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div className="row">
-              <div className="col-3 mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Tamanho</label>
-                <input {...register("tamanho")} type="text" className="form-control" placeholder="Tamanho" id="exampleInputEmail1" aria-describedby="emailHelp" />
+              <div className="d-flex justify-content-end align-items-end">
+                <button className="btn btn-danger mx-1" type="button" onClick={ModalAddProdutoCancelar}>Cancelar</button>
+                <button className="btn btn-success mx-1" placeholder="" type="submit"> Criar Produto </button>
               </div>
-              <div className="col-3 mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Gênero</label>
-                <select {...register("genero")} className="form-select" name="" id="">
-                  <option value="0" ></option>
-                  <option value="1">Masculino</option>
-                  <option value="2">Feminino</option>
-                  <option value="3">Sem Gênero</option>
-                </select>
-              </div>
-              <div className="col-3 mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Cor</label>
-                <input {...register("cor")} type="text" className="form-control" placeholder="Cor" id="exampleInputEmail1" aria-describedby="emailHelp" />
-              </div>
-              <div className="col-3 mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Marca</label>
-                <select {...register("marca")} className="form-select" name="" id="">
-                  <option value="0" ></option>
-                  <option value="1">Marca 1</option>
-                  <option value="2">Marca 2</option>
-                  <option value="3">Marca 3</option>
-                </select>
-              </div>
+            </form>}
 
-            </div>
-            <div className="row">
-              <div className="col-2 mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Estoque</label>
-                <input {...register("estoque")} type="number" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
-              </div>
-              <div className="col-8 mb-3">
-                <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
-                <select {...register("fornecedor")} className="form-select" name="" id="">
-                  <option value="0"></option>
-                  <option value="1">Fornecedor 1</option>
-                  <option value="2">Fornecedor 2</option>
-                  <option value="3">Fornecedor 3</option>
-                </select>
-              </div>
-            </div>
-            <div className="d-flex justify-content-end align-items-end">
-              <button className="btn btn-danger mx-1" onClick={handleClose}>Cancelar</button>
-              <button className="btn btn-success mx-1" placeholder="" onClick={handleClose}> Criar Produto </button>
-            </div>
-          </form>
+
         </DialogContent>
       </Dialog>
 
