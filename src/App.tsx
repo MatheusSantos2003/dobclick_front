@@ -2,7 +2,7 @@
 import Home from './pages/Home/Home'
 import './App.css';
 import Layout from './components/layout/Layout/Layout';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, HashRouter } from 'react-router-dom';
 import EstoquePage from './pages/Produtos/Estoque';
 import Providers from './Providers';
 import Graficos from './pages/graficos/Graficos';
@@ -11,7 +11,7 @@ import Graficos from './pages/graficos/Graficos';
 const App = () => (
   <>
     <Providers>
-      <BrowserRouter>
+      <HashRouter>
         <Layout>
           <Routes>
             <Route path='/' element={<Home />} />
@@ -20,7 +20,7 @@ const App = () => (
             <Route path='*' element={<Home />} />
           </Routes> 
         </Layout>
-      </BrowserRouter>
+      </HashRouter>
     </Providers>
   </>
 )
