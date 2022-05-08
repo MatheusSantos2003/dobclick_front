@@ -1,22 +1,21 @@
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Preloader from "../../components/preloader/Preloader";
+import { useFetch } from "../../hooks/useFetch";
+import { HttpRequestType } from "../../models/HttpRequest.model";
+import { Produto } from "../../models/Produto.model";
+import axios from "axios";
+import { ResponseModel } from "../../models/Response.model";
+import { toast, ToastContainer } from "react-toastify";
+
 
 const EstoquePage = () => {
+  const apiURL = import.meta.env.VITE_APIURL;
 
   //Data Table Options
-  const [data, setData] = useState([
-    {
-      "codigo": "001",
-      "descricao": "Bermuda Jeans",
-      "tamanho": "M",
-      "genero": "1",
-      "cor": "Azul",
-      "estoque": "100"
-    }
-  ]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
   var columns = [
     {
       name: "codigo",
@@ -73,7 +72,6 @@ const EstoquePage = () => {
   const options: MUIDataTableOptions = {
     filterType: 'checkbox',
     onRowSelectionChange: showSelected,
-    count: 10,
     rowsSelected: idsSelecionados,
     print: false,
     download: false,
@@ -127,6 +125,7 @@ const EstoquePage = () => {
 
   const [openModalAddProduto, setopenModalAddProduto] = useState(false);
   const [isLoading, setisLoading] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(false);
   const handleClickOpen = () => {
     setopenModalAddProduto(true);
   };
@@ -142,43 +141,102 @@ const EstoquePage = () => {
     setopenModalAddProduto(false);
   }
 
-  function delay(delayInms:number) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        setisLoading(false);
-        resolve(2);
-      }, delayInms);
-    });
-  }
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const onSubmit = async (values: any) => {
 
+
+  const onSubmit = async (values: Produto) => {
     setisLoading(true);
-    await delay(1500);
+    // const {data,isFetching} =  await useFetch<Produto[]>('/produtos/cadastrar',HttpRequestType.POST,values);
 
-    handleClose();
-    setData([...data, {
-      "codigo": values.codigo,
-      "descricao": values.descricao,
-      "tamanho": values.tamanho,
-      "genero": values.genero,
-      "cor": values.cor,
-      "estoque": values.estoque
-    }]);
-    reset();
+    await axios.post<ResponseModel<Produto[]>>(apiURL + '/produtos/cadastrar', {
+      data: values, validateStatus: function (status: number) {
+        return status < 500;
+      }
+    })
+      .then(async (response) => {
+        setisLoading(false);
+        if (response.data.success) {
+        
+          toast.success(response.data.message ? response.data.message : "Sucesso!" , {
+            type:"success",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          handleClose();
+          listarProdutos();
+        } else {
+          toast.error(response.data.message, {
+            type:"error",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setisLoading(false);
+        }
+
+
+      }).catch((error: ResponseModel<any>) => {
+        console.log(error.message);
+        setisLoading(false);
+      });
+
   }
 
+  const listarProdutos = async () => {
+
+    await axios.get<ResponseModel<Produto[]>>(apiURL + '/produtos')
+      .then((response) => {
+        var novalista: Produto[] = [];
+        response.data.data?.map((prod) => {
+          novalista.push(prod);
+        })
+        setisLoading(false);
+        setIsPageLoading(false);
+        setProdutos(novalista);
+        handleClose();
+        reset();
+      }).catch((error) => {
+        console.log(error);
+        setisLoading(false);
+      });
 
 
+  }
+
+  useEffect(() => {
+    setisLoading(true);
+    setIsPageLoading(true);
+    listarProdutos();
+  }, []);
 
 
   return (
-
     <>
-
+      {isPageLoading && <Preloader />}
       <h2> Estoque </h2>
-
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <div className="row">
         <div className="col-md-12 p-3">
           <button className="btn btn-primary" onClick={handleClickOpen}> Adicionar Produto</button>
@@ -187,7 +245,7 @@ const EstoquePage = () => {
 
       <MUIDataTable
         title={"Lista De Produtos"}
-        data={data}
+        data={produtos}
         columns={columns}
         options={options}
       />
@@ -255,7 +313,7 @@ const EstoquePage = () => {
                   <select
                     {...register("genero", { required: { value: true, message: "Campo Necessário!" } })}
                     className={`form-select ${errors.genero?.message != null ? "is-invalid" : ""}`}
-                   >
+                  >
                     <option value=""  ></option>
                     <option value="1">Masculino</option>
                     <option value="2">Feminino</option>
@@ -286,7 +344,7 @@ const EstoquePage = () => {
                   <select
                     {...register("marca", { required: { value: true, message: "Campo Necessário!" } })}
                     className={`form-select ${errors.marca?.message != null ? "is-invalid" : ""}`}
-                   >
+                  >
                     <option key={''} value=''></option>
                     <option key={1} value={1}>Marca 1</option>
                     <option key={2} value={2}>Marca 3</option>
@@ -312,9 +370,9 @@ const EstoquePage = () => {
                 </div>
                 <div className="col-8 mb-3">
                   <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
-                  <select  
-                  {...register("fornecedor", { required: { value: true, message: "Campo Necessário!" } })} 
-                  className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}>
+                  <select
+                    {...register("fornecedor", { required: { value: true, message: "Campo Necessário!" } })}
+                    className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}>
                     <option key={''} value=''></option>
                     <option key={1} value={1}>Fornecedor 1</option>
                     <option key={2} value={2}>Fornecedor 2</option>

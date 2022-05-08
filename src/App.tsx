@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes, HashRouter } from 'react-router-dom';
 import EstoquePage from './pages/Produtos/Estoque';
 import Providers from './Providers';
 import Graficos from './pages/graficos/Graficos';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const App = () => (

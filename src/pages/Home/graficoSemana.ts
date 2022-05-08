@@ -1,0 +1,63 @@
+import { ChartType } from "../../models/ChartOptions.model";
+
+ const GraficoSemanaOptions: ChartType = {
+    options: {
+        chart: {
+            id: "basic-bar",
+            locales: [{
+                name: 'en',
+                options: {
+                    months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    shortMonths: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    days: ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'],
+                    shortDays: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    toolbar: {
+                        download: 'Download do SVG',
+                        selection: 'Seleção',
+                        selectionZoom: 'Zoom da Seleção',
+                        zoomIn: 'Mais Zoom',
+                        zoomOut: 'Menos Zoom',
+                        pan: 'Panoramica',
+                        reset: 'Resetar Zoom',
+                    }
+                }
+            }]
+
+        },
+        xaxis: {
+            categories: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: function (value: any) {
+                return "R$" + value;
+            },
+            offsetY: -20,
+            style: {
+                fontSize: '10px',
+                colors: ["#fff"]
+            }
+
+        }
+    },
+    responsive: [{
+        breakpoint: 1000,
+        options: {
+            chart: {
+                width: "100%"
+            },
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }],
+    series: [
+        {
+            name: "Lucro",
+            data: [30.15, 47.19, 45.10, 50.25, 49.50, 60.79, 32.01]
+        }
+    ],
+    type: "bar",
+};
+
+export default  GraficoSemanaOptions;
