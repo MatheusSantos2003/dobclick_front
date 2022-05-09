@@ -1,6 +1,6 @@
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Card, Dialog, DialogContent, DialogTitle, Table } from "@mui/material";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Preloader from "../../components/preloader/Preloader";
 import { useFetch } from "../../hooks/useFetch";
@@ -9,6 +9,7 @@ import { Produto } from "../../models/Produto.model";
 import axios from "axios";
 import { ResponseModel } from "../../models/Response.model";
 import { toast, ToastContainer } from "react-toastify";
+import TableComponent from "./Table/Table";
 
 
 const EstoquePage = () => {
@@ -17,6 +18,15 @@ const EstoquePage = () => {
   //Data Table Options
   const [produtos, setProdutos] = useState<Produto[]>([]);
   var columns = [
+    {
+      name: "Id",
+      label: "Id",
+      options: {
+        display: false,
+        filter: false,
+        sort: false,
+      }
+    },
     {
       name: "codigo",
       label: "Código",
@@ -36,6 +46,14 @@ const EstoquePage = () => {
     {
       name: "tamanho",
       label: "Tamanho",
+      options: {
+        filter: true,
+        sort: true,
+      }
+    },
+    {
+      name: "marca",
+      label: "Marca",
       options: {
         filter: true,
         sort: true,
@@ -71,7 +89,27 @@ const EstoquePage = () => {
 
   const options: MUIDataTableOptions = {
     filterType: 'checkbox',
-    onRowSelectionChange: showSelected,
+    onRowClick: ((rowdata, rowmeta) => {
+      setIsPageLoading(true);
+      selecionarProduto(Number(rowdata[0]));
+
+    }),
+    onRowsDelete: ((rowsDeleted, newTableData) => {
+      var listaIndices: number[] = [];
+
+      rowsDeleted.data.map((values) => {
+        listaIndices.push(values.index);
+      });
+
+      var listaIds: number[] = [];
+
+      listaIndices.map((indice) => {
+        listaIds.push(produtos[indice].Id);
+      });
+
+
+      exlcuirProduto(listaIds);
+    }),
     rowsSelected: idsSelecionados,
     print: false,
     download: false,
@@ -111,19 +149,15 @@ const EstoquePage = () => {
     }
   };
 
-  function showSelected(currentRowsSelected: any[], allRowsSelected: any[], rowsSelected?: any[]): void {
-    console.log("currentRowsSelected :");
-    console.log(currentRowsSelected)
-    console.log("allRowsSelected:");
-    console.log(allRowsSelected);
-    console.log("rowsSelected: ");
-    console.log(allRowsSelected);
-  }
 
   //  /DataTableOptions
 
 
   const [openModalAddProduto, setopenModalAddProduto] = useState(false);
+  const [openModalEditarProduto, setopenModalEditProduto] = useState(false);
+  const [ProdutoEditing, setProdutoEditing] = useState<Produto>();
+  let ProdutoEditiingnew: SetStateAction<Produto | undefined>;
+
   const [isLoading, setisLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(false);
   const handleClickOpen = () => {
@@ -135,10 +169,22 @@ const EstoquePage = () => {
     setopenModalAddProduto(false);
   };
 
+  const handleCloseEdit = () => {
+    setProdutoEditing(new Produto());
+    reset();
+    setopenModalEditProduto(false);
+  }
+
 
   const ModalAddProdutoCancelar = () => {
     reset();
     setopenModalAddProduto(false);
+  }
+
+  const ModalEditarProdutoCancelar = () => {
+    setProdutoEditing(new Produto());
+    reset();
+    setopenModalEditProduto(false);
   }
 
 
@@ -157,9 +203,9 @@ const EstoquePage = () => {
       .then(async (response) => {
         setisLoading(false);
         if (response.data.success) {
-        
-          toast.success(response.data.message ? response.data.message : "Sucesso!" , {
-            type:"success",
+
+          toast.success(response.data.message ? response.data.message : "Sucesso!", {
+            type: "success",
             theme: "colored",
             position: "top-right",
             autoClose: 5000,
@@ -173,7 +219,7 @@ const EstoquePage = () => {
           listarProdutos();
         } else {
           toast.error(response.data.message, {
-            type:"error",
+            type: "error",
             theme: "colored",
             position: "top-right",
             autoClose: 5000,
@@ -191,6 +237,56 @@ const EstoquePage = () => {
         console.log(error.message);
         setisLoading(false);
       });
+
+  }
+
+  const onSubmitEdit = async (values: Produto) => {
+    setisLoading(true);
+
+    await axios.put<ResponseModel<any>>(apiURL + "/produtos/editar", {
+      data: values
+    })
+      .then((response) => {
+        setisLoading(false);
+
+        if (response.data.success) {
+          toast.success(response.data.message ? response.data.message : "Sucesso!", {
+            type: "success",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          handleCloseEdit();
+          reset();
+          listarProdutos();
+        } else {
+
+          toast.error(response.data.message, {
+            type: "error",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          listarProdutos();
+
+
+        }
+
+
+      }).catch((error) => {
+        console.log(error);
+      });
+
 
   }
 
@@ -215,11 +311,138 @@ const EstoquePage = () => {
 
   }
 
+
+
+  async function selecionarProduto(id: number) {
+
+    setisLoading(true);
+    await axios.get<ResponseModel<Produto>>(apiURL + "/produtos/consultar/" + id)
+      .then(async (res) => {
+
+        setIsPageLoading(false);
+        setisLoading(false);
+        ProdutoEditiingnew = res.data.data;
+        setProdutoEditing(res.data.data);
+
+      }).catch((error) => {
+        console.log(error);
+      })
+
+      setopenModalEditProduto(true);
+  }
+
+  function exlcuirProduto(listaIds: number[]) {
+    setIsPageLoading(true);
+    if (listaIds.length == 1) {
+
+      excluirUnicoProduto(listaIds[0]);
+    } else {
+      exlcuirListasProdutos(listaIds);
+    }
+  }
+
+  function excluirUnicoProduto(id: number) {
+    setisLoading(true);
+    axios.delete<ResponseModel<any>>(apiURL + '/produtos', {
+      data: { "id": id }
+    })
+      .then((res) => {
+
+        if (res.data.success) {
+
+          toast.success(res.data.message ? res.data.message : "Sucesso!", {
+            type: "success",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          listarProdutos();
+          setIsPageLoading(false);
+        } else {
+          toast.error(res.data.message, {
+            type: "error",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          listarProdutos();
+          setIsPageLoading(false);
+        }
+      }).catch((error) => {
+        console.log(error);
+        setIsPageLoading(false);
+      });
+  }
+
+  function exlcuirListasProdutos(listaIds: number[]) {
+
+    setisLoading(true);
+    axios.delete<ResponseModel<any>>(apiURL + '/produtos/deletarPorLista', {
+      data: { "listaids": listaIds }
+    })
+      .then((res) => {
+
+        if (res.data.success) {
+
+          toast.success(res.data.message ? res.data.message : "Sucesso!", {
+            type: "success",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          listarProdutos();
+          setIsPageLoading(false);
+        } else {
+          toast.error(res.data.message, {
+            type: "error",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          listarProdutos();
+          setIsPageLoading(false);
+        }
+      }).catch((error) => {
+        console.log(error);
+        setIsPageLoading(false);
+      });
+
+  }
+
   useEffect(() => {
     setisLoading(true);
     setIsPageLoading(true);
     listarProdutos();
+
   }, []);
+
+  
+    useEffect(()=>{
+      if(ProdutoEditing?.Id != 0 && ProdutoEditing?.Id != null){
+        setopenModalEditProduto(true);
+        console.log(ProdutoEditing);
+      }
+    },[ProdutoEditing])
 
 
   return (
@@ -243,6 +466,152 @@ const EstoquePage = () => {
         </div>
       </div>
 
+            {/* Modal de editar Produto */}
+            {openModalEditarProduto &&  
+      <Card raised={true} sx={{marginBottom: 10}} >
+        {!isLoading &&
+          <DialogTitle sx={{ textAlign: "center" }}>Editar Produto</DialogTitle>
+        }
+        <DialogContent>
+          {isLoading &&
+            <div className="m-5 p-5">
+              <Preloader />
+            </div>
+          }
+
+          {!isLoading &&
+            <form onSubmit={handleSubmit(onSubmitEdit)}>
+              <div className="row">
+                <div className="col-6 mb-3">
+                  <input {...register("Id")} type="hidden" value={ProdutoEditing?.Id} />
+                  <label
+                    htmlFor="exampleInputPassword1"
+                    className="form-label"
+                  >Código
+                  </label>
+                  <input
+                    {...register("codigo", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="text"
+                    defaultValue={ProdutoEditing?.codigo}
+                    placeholder="Código"
+                    className={`form-control ${errors.codigo?.message != null ? "is-invalid" : ""}`}
+                    id="exampleInputPassword1" />
+                  {errors.codigo && <p className="text-danger">{errors.codigo.message}</p>}
+                </div>
+                <div className="col-6 mb-3">
+                  <label htmlFor="exampleInputEmail1" className="form-label">Descrição</label>
+                  <input {...register("descricao", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="text"
+                    defaultValue={ProdutoEditing?.descricao}
+                    placeholder="Descrição"
+                    className={`form-control ${errors.descricao?.message != null ? "is-invalid" : ""}`}
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                  {errors.descricao && <p className="text-danger">{errors.descricao?.message}</p>}
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-3 mb-3">
+                  <label htmlFor="exampleInputEmail1"
+                    className="form-label">Tamanho
+                  </label>
+                  <input
+                    {...register("tamanho", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="text"
+                    defaultValue={ProdutoEditing?.tamanho}
+                    className={`form-control ${errors.tamanho?.message != null ? "is-invalid" : ""}`}
+                    placeholder="Tamanho"
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                </div>
+                <div className="col-3 mb-3">
+                  <label htmlFor="exampleInputEmail1" className="form-label">Gênero</label>
+                  <select
+                    {...register("genero", { required: { value: true, message: "Campo Necessário!" } })}
+                    className={`form-select ${errors.genero?.message != null ? "is-invalid" : ""}`}
+                    defaultValue={ProdutoEditing?.genero}
+                  >
+                    <option value=""  ></option>
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMININO">Feminino</option>
+                    <option value="SEM GENERO">Sem Gênero</option>
+                  </select>
+                  {errors.genero && <p className="text-danger">{errors.genero?.message}</p>}
+                </div>
+                <div className="col-3 mb-3">
+                  <label
+                    htmlFor="exampleInputEmail1"
+                    className="form-label">
+                    Cor
+                  </label>
+                  <input
+                    {...register("cor", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="text"
+                    defaultValue={ProdutoEditing?.cor}
+                    className={`form-control ${errors.cor?.message != null ? "is-invalid" : ""}`}
+                    placeholder="Cor"
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                </div>
+                <div className="col-3 mb-3">
+                  <label
+                    htmlFor="exampleInputEmail1"
+                    className="form-label">
+                    Marca
+                  </label>
+                  <select
+                    {...register("marca", { required: { value: true, message: "Campo Necessário!" } })}
+                    className={`form-select ${errors.marca?.message != null ? "is-invalid" : ""}`}
+                    defaultValue={ProdutoEditing?.marca}
+                  >
+                    <option value=''></option>
+                    <option value="Marca 1">Marca 1</option>
+                    <option value="Marca 3">Marca 3</option>
+                    <option value="Marca 2">Marca 2</option>
+                  </select>
+
+                </div>
+
+              </div>
+              <div className="row">
+                <div className="col-2 mb-3">
+                  <label
+                    htmlFor="exampleInputEmail1"
+                    className="form-label">
+                    Estoque
+                  </label>
+                  <input
+                    {...register("estoque", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="number"
+                    defaultValue={ProdutoEditing?.estoque}
+                    className={`form-control ${errors.estoque?.message != null ? "is-invalid" : ""}`}
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                </div>
+                <div className="col-8 mb-3">
+                  <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
+                  <select
+                    {...register("fornecedorId", { required: { value: true, message: "Campo Necessário!" } })}
+                    className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}
+                    defaultValue={ProdutoEditing?.fornecedorId}>
+                    <option key={''} value=''></option>
+                    <option key={1} value={1}>Fornecedor 1</option>
+                    <option key={2} value={2}>Fornecedor 2</option>
+                    <option key={3} value={3}>Fornecedor 3</option>
+                  </select>
+                </div>
+              </div>
+              <div className="d-flex justify-content-end align-items-end">
+                <button className="btn btn-danger mx-1" type="button" onClick={ModalEditarProdutoCancelar}>Cancelar</button>
+                <button className="btn btn-primary mx-1" placeholder="" type="submit"> Alterar Produto </button>
+              </div>
+            </form>}
+
+
+        </DialogContent>
+      </Card>}
+
+      {/* <TableComponent  data={produtos} colunas={columns} /> */}
       <MUIDataTable
         title={"Lista De Produtos"}
         data={produtos}
@@ -315,9 +684,9 @@ const EstoquePage = () => {
                     className={`form-select ${errors.genero?.message != null ? "is-invalid" : ""}`}
                   >
                     <option value=""  ></option>
-                    <option value="1">Masculino</option>
-                    <option value="2">Feminino</option>
-                    <option value="3">Sem Gênero</option>
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMININO">Feminino</option>
+                    <option value="SEM GENERO">Sem Gênero</option>
                   </select>
                   {errors.genero && <p className="text-danger">{errors.genero?.message}</p>}
                 </div>
@@ -345,10 +714,10 @@ const EstoquePage = () => {
                     {...register("marca", { required: { value: true, message: "Campo Necessário!" } })}
                     className={`form-select ${errors.marca?.message != null ? "is-invalid" : ""}`}
                   >
-                    <option key={''} value=''></option>
-                    <option key={1} value={1}>Marca 1</option>
-                    <option key={2} value={2}>Marca 3</option>
-                    <option key={3} value={3}>Marca 2</option>
+                    <option value=''></option>
+                    <option value="Marca 1">Marca 1</option>
+                    <option value="Marca 3">Marca 3</option>
+                    <option value="Marca 2">Marca 2</option>
                   </select>
 
                 </div>
@@ -371,7 +740,7 @@ const EstoquePage = () => {
                 <div className="col-8 mb-3">
                   <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
                   <select
-                    {...register("fornecedor", { required: { value: true, message: "Campo Necessário!" } })}
+                    {...register("fornecedorId", { required: { value: true, message: "Campo Necessário!" } })}
                     className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}>
                     <option key={''} value=''></option>
                     <option key={1} value={1}>Fornecedor 1</option>
@@ -389,6 +758,8 @@ const EstoquePage = () => {
 
         </DialogContent>
       </Dialog>
+
+
 
     </>
   )
