@@ -9,7 +9,7 @@ import { Produto } from "../../models/Produto.model";
 import axios from "axios";
 import { ResponseModel } from "../../models/Response.model";
 import { toast, ToastContainer } from "react-toastify";
-import TableComponent from "./Table/Table";
+
 
 
 const EstoquePage = () => {
@@ -101,10 +101,10 @@ const EstoquePage = () => {
         listaIndices.push(values.index);
       });
 
-      var listaIds: number[] = [];
+      var listaIds: any[] = [];
 
       listaIndices.map((indice) => {
-        listaIds.push(produtos[indice].Id);
+        listaIds?.push(produtos[indice].Id);
       });
 
 
