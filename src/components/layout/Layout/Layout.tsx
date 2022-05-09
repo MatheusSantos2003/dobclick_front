@@ -16,8 +16,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faBoxArchive, faChartLine, faChevronLeft, faChevronRight, faDashboard, faDoorOpen, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { Button, Container, Menu, MenuItem } from '@mui/material';
 import "../../../App.css";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 const drawerWidth = 240;
+
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
@@ -102,6 +103,8 @@ const Layout: React.FC = ({ children }) => {
     setAnchorEl(null);
   };
 
+
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -140,12 +143,15 @@ const Layout: React.FC = ({ children }) => {
           >
             <MenuItem onClick={handleClose}>Minha Conta</MenuItem>
             <Divider />
+              <Link className='text-decoration-none text-dark' to={"/"}>
             <MenuItem onClick={handleClose}>
-              Sair
+             Sair
               <Typography variant="body2" color="text.secondary" className='ps-5'>
                 <FontAwesomeIcon icon={faDoorOpen} />
               </Typography>
             </MenuItem>
+              </Link>
+              
           </Menu>
         </Toolbar>
       </AppBar>
@@ -173,7 +179,7 @@ const Layout: React.FC = ({ children }) => {
         </DrawerHeader>
         <Divider />
         <List>
-          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/"}>
+          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/Home"}>
             <ListItem button>
 
               <ListItemText >

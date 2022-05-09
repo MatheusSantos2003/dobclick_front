@@ -7,6 +7,7 @@ import EstoquePage from './pages/Produtos/Estoque';
 import Providers from './Providers';
 import Graficos from './pages/graficos/Graficos';
 import 'react-toastify/dist/ReactToastify.css';
+import LoginPage from './pages/Login/LoginPage';
 
 
 const App = () => (
@@ -15,10 +16,11 @@ const App = () => (
       <HashRouter>
         <Layout>
           <Routes>
-            <Route path='/' element={<Home />} />
+            <Route path='/home' element={<Home />} />
             <Route path='/estoque' element={<EstoquePage />} />
             <Route path='/graficos' element={<Graficos />} />
-            <Route path='*' element={<Home />} />
+            <Route path='*' element={<LoginPage />} />
+            <Route path='/' element={<LoginPage />} />
           </Routes> 
         </Layout>
       </HashRouter>
