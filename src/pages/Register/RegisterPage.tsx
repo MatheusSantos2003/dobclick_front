@@ -4,25 +4,25 @@ import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { ResponseModel } from "../../models/Response.model";
 import { useNavigate } from "react-router-dom";
-import "./LoginPage.css";
+import "./RegisterPage.css";
 
 
 
 
 const apiURL = import.meta.env.VITE_APIURL;
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const [showPassword,setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(true);
   const navigate = useNavigate();
 
-  const SubmitLoginForm = async (values: any) => {
-  
-    axios.post<ResponseModel<any>>(apiURL+"/usuarios/login",values).then((res)=>{
-      if(res.data.success){
-       
-        // context.Login(values.email,values.login);
-   
+  const SubmitRegisterForm = async (values: any) => {
+
+    axios.post<ResponseModel<any>>(apiURL + "/usuarios/cadastrar", values).then((res) => {
+      if (res.data.success) {
+
+
+
         toast.success(res.data.message ? res.data.message : "Sucesso!", {
           type: "success",
           theme: "colored",
@@ -35,24 +35,36 @@ const LoginPage = () => {
           progress: undefined,
         });
         localStorage.setItem('userToken', JSON.stringify(res.data.data));
-       navigate("/Home");
-      }else{
-        alert("Erro!");
+        navigate("/Home");
+      } else {
+
+        toast.error(res.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }
     })
 
   }
 
-  const handleShowPassword = () =>{
+  const handleShowPassword = () => {
 
     setShowPassword(!showPassword);
 
   }
 
-  const handleRegister = () =>{
-    navigate("/cadastro");
-  }
-  
+  useEffect(() => {
+
+
+  }, []);
+
   return (
     <div
       className=""
@@ -66,42 +78,61 @@ const LoginPage = () => {
       }}
     >
       <div className="login-form">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
         <div className="row py-5 mx-auto  ">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
           <div className="col-md-6 mx-auto">
             <div className="card pt-3 px-3 rounded shadow-lg">
               <h1 className="mb-0 text-center">
-                <strong>Login</strong>
+                <strong>Cadastrar</strong>
               </h1>
 
               <div className="card-body pb-0 mb-0">
-                <form onSubmit={handleSubmit(SubmitLoginForm)} className="form">
+                <form onSubmit={handleSubmit(SubmitRegisterForm)} className="form">
                   <div className="form-group">
                     <div className="row my-2">
                       <div className="col-md-1 col-lg-1 col-sm-12">
                         <label className="py-2 text-center" htmlFor="">
-                          Email:{" "}
+                          Nome:
                         </label>
                       </div>
                       <div className="col-md-9 col-lg-9 col-sm-12">
                         <input
-                        {...register("email",{required:{value: false,message:"Necessário informar o Email"},pattern:{value:/[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]+/i,message:"Email Inválido!"}})}
+                          {...register("nome", { required: { value: false, message: "Necessário informar o Nome" } })}
+                          name="nome"
+                          type="text"
+                          className={`form-control rounded ${errors.nome?.message != null ? "is-invalid" : ""}`}
+                          required
+                        />
+                        {errors.nome && <p className="text-danger">{errors.nome.message}</p>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <div className="row my-2">
+                      <div className="col-md-1 col-lg-1 col-sm-12">
+                        <label className="py-2 text-center" htmlFor="">
+                          Email:
+                        </label>
+                      </div>
+                      <div className="col-md-9 col-lg-9 col-sm-12">
+                        <input
+                          {...register("email", { required: { value: false, message: "Necessário informar o Email" }, pattern: { value: /[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]+/i, message: "Email Inválido!" } })}
                           name="email"
                           type="email"
                           className={`form-control rounded ${errors.email?.message != null ? "is-invalid" : ""}`}
                           required
                         />
-                          {errors.email && <p className="text-danger">{errors.email.message}</p>}
+                        {errors.email && <p className="text-danger">{errors.email.message}</p>}
                       </div>
                     </div>
                   </div>
@@ -114,15 +145,18 @@ const LoginPage = () => {
                       </div>
                       <div className="col-md-9 col-lg-9 col-sm-12">
                         <input
-                        {...register("senha",{pattern:{value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g,message:"Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!"}})}
+                          {...register("senha", { pattern: { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" } })}
                           name="senha"
                           type={showPassword ? "text" : "password"}
                           className={`form-control rounded ${errors.senha?.message != null ? "is-invalid" : ""}`}
                           required
                         />
-                         {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
+                        {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
+                        <div className="pt-3">
+                          <a style={{ cursor: "pointer" }}>Esqueceu a Senha?</a>
+                        </div>
                       </div>
-                
+
                     </div>
                   </div>
                   <div className="pt-4 d-flex justify-content-center">
@@ -131,12 +165,12 @@ const LoginPage = () => {
                       type="submit"
                       style={{ backgroundColor: "#0b8ad9", color: "white" }}
                     >
-                      <strong>Login</strong>
+                      <strong>Cadastrar-se</strong>
                     </button>
                   </div>
                   <div className="mt-3 text-sm text-center">
                     <p className="fs-6">
-                    <a onClick={handleRegister} style={{ cursor: "pointer" }}>  Não Tenha uma Conta?  Registre-se</a>
+                      <a style={{ cursor: "pointer" }}>  Não Tenha uma Conta?  Registre-se</a>
                     </p>
                   </div>
                 </form>
@@ -149,4 +183,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

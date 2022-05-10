@@ -96,6 +96,7 @@ const Layout: React.FC = ({ children }) => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openLogMenu = Boolean(anchorEl);
+  const navigate = useNavigate();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -103,6 +104,11 @@ const Layout: React.FC = ({ children }) => {
     setAnchorEl(null);
   };
 
+  const Sair = () =>{
+    setAnchorEl(null);
+    localStorage.removeItem("userToken");
+    navigate('/');
+  }
 
 
   return (
@@ -144,7 +150,7 @@ const Layout: React.FC = ({ children }) => {
             <MenuItem onClick={handleClose}>Minha Conta</MenuItem>
             <Divider />
               <Link className='text-decoration-none text-dark' to={"/"}>
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={Sair}>
              Sair
               <Typography variant="body2" color="text.secondary" className='ps-5'>
                 <FontAwesomeIcon icon={faDoorOpen} />

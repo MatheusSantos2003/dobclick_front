@@ -4,9 +4,13 @@ import Chart from "react-apexcharts";
 import GraficoSemanaOptions from "./graficoSemana";
 import GraficoEstoqueCritico from "./graficoEstoqueCritico";
 import GraficoLinha from "./graficoLinha";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import User from "../../models/User.model";
+import { useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
 
-const apiURL = import.meta.env.VITE_APIURL;
+
+
 
 
 
@@ -14,13 +18,31 @@ const apiURL = import.meta.env.VITE_APIURL;
 
 
 function Home() {
-    useEffect(() =>{
-        console.log(apiURL);
+    let userData: User = new User();
+    const [usuarioName, setUsuario] = useState<string | undefined>("");
+    const navigate = useNavigate();
+
+
+
+    useEffect(() => {
+        var token: any = JSON.parse(localStorage.getItem("userToken") || 'null');
+
+        if (token != null) {
+            userData = jwtDecode(token);
+
+            setUsuario(userData.nome);
+        }
+
+        if (userData?.Id == null) {
+            navigate("/");
+        }
     });
     return (
-    
+
         <>
+
             <h2>Home</h2>
+            {usuarioName && <h6>Seja Bem-vindo(a) {usuarioName} ! </h6>}
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-6 col-lg-6 col-sm-12 py-2">

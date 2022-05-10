@@ -8,9 +8,16 @@ import Providers from './Providers';
 import Graficos from './pages/graficos/Graficos';
 import 'react-toastify/dist/ReactToastify.css';
 import LoginPage from './pages/Login/LoginPage';
+import RegisterPage from './pages/Register/RegisterPage';
 
 
-const App = () => (
+
+
+
+
+const App = () => {
+
+  return (
   <>
     <Providers>
       <HashRouter>
@@ -21,11 +28,16 @@ const App = () => (
             <Route path='/graficos' element={<Graficos />} />
             <Route path='*' element={<LoginPage />} />
             <Route path='/' element={<LoginPage />} />
-          </Routes> 
+            <Route path='/cadastro' element={<RegisterPage />} />
+          </Routes>
         </Layout>
       </HashRouter>
     </Providers>
   </>
-)
+  );
+
+}
+
+
 
 export default App
