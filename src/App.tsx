@@ -21,16 +21,16 @@ const App = () => {
   <>
     <Providers>
       <HashRouter>
-        <Layout>
+     
           <Routes>
             <Route path='/home' element={<Home />} />
             <Route path='/estoque' element={<EstoquePage />} />
-            <Route path='/graficos' element={<Graficos />} />
+            <Route path='/vendas' element={<Graficos />} />
             <Route path='*' element={<LoginPage />} />
             <Route path='/' element={<LoginPage />} />
             <Route path='/cadastro' element={<RegisterPage />} />
           </Routes>
-        </Layout>
+      
       </HashRouter>
     </Providers>
   </>

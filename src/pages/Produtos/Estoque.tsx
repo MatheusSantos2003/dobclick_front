@@ -9,6 +9,7 @@ import { Produto } from "../../models/Produto.model";
 import axios from "axios";
 import { ResponseModel } from "../../models/Response.model";
 import { toast, ToastContainer } from "react-toastify";
+import Layout from "../../components/layout/Layout/Layout";
 
 
 
@@ -446,7 +447,7 @@ const EstoquePage = () => {
 
 
   return (
-    <>
+    <Layout>
       {isPageLoading && <Preloader />}
       <h2> Estoque </h2>
       <ToastContainer
@@ -761,7 +762,7 @@ const EstoquePage = () => {
 
 
 
-    </>
+    </Layout>
   )
 
 

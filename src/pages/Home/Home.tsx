@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import User from "../../models/User.model";
 import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
+import Layout from "../../components/layout/Layout/Layout";
 
 
 
@@ -39,7 +40,10 @@ function Home() {
     });
     return (
 
-        <>
+
+
+
+        <Layout>
 
             <h2>Home</h2>
             {usuarioName && <h6>Seja Bem-vindo(a) {usuarioName} ! </h6>}
@@ -94,7 +98,7 @@ function Home() {
                     </div>
                 </div>
             </div>
-        </>
+        </Layout>
     )
 }
 

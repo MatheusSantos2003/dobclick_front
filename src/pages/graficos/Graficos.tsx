@@ -1,10 +1,12 @@
+import Layout from "../../components/layout/Layout/Layout"
+
 const Graficos = () =>{
 
 
     return(
-        <>
-        <h2>Gráficos</h2>
-        </>
+        <Layout>
+        <h2>Vendas</h2>
+        </Layout>
     )
 
 }

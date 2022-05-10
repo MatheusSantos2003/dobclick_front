@@ -13,7 +13,7 @@ const apiURL = import.meta.env.VITE_APIURL;
 
 const LoginPage = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const [showPassword,setShowPassword] = useState(true);
+  const [showPassword,setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const SubmitLoginForm = async (values: any) => {
@@ -37,7 +37,17 @@ const LoginPage = () => {
         localStorage.setItem('userToken', JSON.stringify(res.data.data));
        navigate("/Home");
       }else{
-        alert("Erro!");
+        toast.error(res.data.message ? res.data.message : "Sucesso!", {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }
     })
 
@@ -65,7 +75,7 @@ const LoginPage = () => {
         backgroundColor: "#053259",
       }}
     >
-      <div className="login-form">
+      <div style={{marginTop:"20vh",marginBottom:"20vh"}} >
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -77,7 +87,7 @@ const LoginPage = () => {
         draggable
         pauseOnHover
       />
-        <div className="row py-5 mx-auto  ">
+        <div className=" w-100 " style={{margin: "auto"}}>
           <div className="col-md-6 mx-auto">
             <div className="card pt-3 px-3 rounded shadow-lg">
               <h1 className="mb-0 text-center">
@@ -87,13 +97,12 @@ const LoginPage = () => {
               <div className="card-body pb-0 mb-0">
                 <form onSubmit={handleSubmit(SubmitLoginForm)} className="form">
                   <div className="form-group">
-                    <div className="row my-2">
-                      <div className="col-md-1 col-lg-1 col-sm-12">
+                   
                         <label className="py-2 text-center" htmlFor="">
                           Email:{" "}
                         </label>
-                      </div>
-                      <div className="col-md-9 col-lg-9 col-sm-12">
+                    
+                   
                         <input
                         {...register("email",{required:{value: false,message:"Necessário informar o Email"},pattern:{value:/[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]+/i,message:"Email Inválido!"}})}
                           name="email"
@@ -102,17 +111,16 @@ const LoginPage = () => {
                           required
                         />
                           {errors.email && <p className="text-danger">{errors.email.message}</p>}
-                      </div>
-                    </div>
+                
                   </div>
                   <div className="form-group">
-                    <div className="row my-2">
-                      <div className="col-md-1 col-lg-1 col-sm-12">
-                        <label className="py-2 " htmlFor="senha">
+                   
+                     
+                        <label className="py-1 pe-5 " htmlFor="senha">
                           Senha:
                         </label>
-                      </div>
-                      <div className="col-md-9 col-lg-9 col-sm-12">
+                    
+                    
                         <input
                         {...register("senha",{pattern:{value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g,message:"Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!"}})}
                           name="senha"
@@ -121,9 +129,7 @@ const LoginPage = () => {
                           required
                         />
                          {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
-                      </div>
-                
-                    </div>
+                    
                   </div>
                   <div className="pt-4 d-flex justify-content-center">
                     <button

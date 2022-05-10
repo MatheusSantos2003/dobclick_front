@@ -208,10 +208,10 @@ const Layout: React.FC = ({ children }) => {
             </ListItem>
           </Link>
 
-          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/graficos"}>
+          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/vendas"}>
             <ListItem button>
               <ListItemText >
-                Gráficos
+                Vendas
               </ListItemText>
               <ListItemIcon>
                 <FontAwesomeIcon icon={faChartLine} color='white' ></FontAwesomeIcon>

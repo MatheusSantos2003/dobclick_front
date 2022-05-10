@@ -12,11 +12,30 @@ import "./RegisterPage.css";
 const apiURL = import.meta.env.VITE_APIURL;
 
 const RegisterPage = () => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset,setError,clearErrors, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(true);
   const navigate = useNavigate();
 
   const SubmitRegisterForm = async (values: any) => {
+      // alert(values.senha + "  _  "+values.confirmaSenha);
+      console.log(values);
+    if(values.senha != values.confirmaSenha){
+      // toast.error("As Senhas São diferentes!", {
+      //   type: "error",
+      //   theme: "colored",
+      //   position: "top-right",
+      //   autoClose: 5000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      // });
+      
+      setError("confirmaSenha",{type:"custom",message:"Senhas Diferentes!"})
+
+      return;
+    }
 
     axios.post<ResponseModel<any>>(apiURL + "/usuarios/cadastrar", values).then((res) => {
       if (res.data.success) {
@@ -55,9 +74,15 @@ const RegisterPage = () => {
   }
 
   const handleShowPassword = () => {
-
     setShowPassword(!showPassword);
+  }
 
+  const ClearErrorForm = () =>{
+    clearErrors("confirmaSenha");
+  }
+
+  const handleLogin = () =>{
+    navigate("/");
   }
 
   useEffect(() => {
@@ -78,20 +103,21 @@ const RegisterPage = () => {
       }}
     >
       <div className="login-form">
-        <div className="row py-5 mx-auto  ">
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
+        <div className="container-fluid" style={{paddingTop:"5vh",paddingBottom:"5vh"}}>
+        <div className="row  mx-auto">
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <div className="col-md-6 mx-auto">
-            <div className="card pt-3 px-3 rounded shadow-lg">
+            <div className="card pt-3 px-2 rounded shadow-lg">
               <h1 className="mb-0 text-center">
                 <strong>Cadastrar</strong>
               </h1>
@@ -99,65 +125,77 @@ const RegisterPage = () => {
               <div className="card-body pb-0 mb-0">
                 <form onSubmit={handleSubmit(SubmitRegisterForm)} className="form">
                   <div className="form-group">
-                    <div className="row my-2">
-                      <div className="col-md-1 col-lg-1 col-sm-12">
-                        <label className="py-2 text-center" htmlFor="">
-                          Nome:
-                        </label>
-                      </div>
-                      <div className="col-md-9 col-lg-9 col-sm-12">
-                        <input
-                          {...register("nome", { required: { value: false, message: "Necessário informar o Nome" } })}
-                          name="nome"
-                          type="text"
-                          className={`form-control rounded ${errors.nome?.message != null ? "is-invalid" : ""}`}
-                          required
-                        />
-                        {errors.nome && <p className="text-danger">{errors.nome.message}</p>}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <div className="row my-2">
-                      <div className="col-md-1 col-lg-1 col-sm-12">
-                        <label className="py-2 text-center" htmlFor="">
-                          Email:
-                        </label>
-                      </div>
-                      <div className="col-md-9 col-lg-9 col-sm-12">
-                        <input
-                          {...register("email", { required: { value: false, message: "Necessário informar o Email" }, pattern: { value: /[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]+/i, message: "Email Inválido!" } })}
-                          name="email"
-                          type="email"
-                          className={`form-control rounded ${errors.email?.message != null ? "is-invalid" : ""}`}
-                          required
-                        />
-                        {errors.email && <p className="text-danger">{errors.email.message}</p>}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <div className="row my-2">
-                      <div className="col-md-1 col-lg-1 col-sm-12">
-                        <label className="py-2 " htmlFor="senha">
-                          Senha:
-                        </label>
-                      </div>
-                      <div className="col-md-9 col-lg-9 col-sm-12">
-                        <input
-                          {...register("senha", { pattern: { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" } })}
-                          name="senha"
-                          type={showPassword ? "text" : "password"}
-                          className={`form-control rounded ${errors.senha?.message != null ? "is-invalid" : ""}`}
-                          required
-                        />
-                        {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
-                        <div className="pt-3">
-                          <a style={{ cursor: "pointer" }}>Esqueceu a Senha?</a>
-                        </div>
-                      </div>
 
-                    </div>
+                    <label className="py-2 text-center" htmlFor="">
+                      Nome:
+                    </label>
+
+
+                    <input
+                      {...register("nome", { required: { value: false, message: "Necessário informar o Nome" } })}
+                      name="nome"
+                      type="text"
+                      className={`form-control rounded ${errors.nome?.message != null ? "is-invalid" : ""}`}
+                      required
+                    />
+                    {errors.nome && <p className="text-danger">{errors.nome.message}</p>}
+
+                  </div>
+                  <div className="form-group">
+
+
+                    <label className="py-2 text-center" htmlFor="">
+                      Email:
+                    </label>
+
+
+                    <input
+                      {...register("email", { required: { value: false, message: "Necessário informar o Email" }})}
+                      name="email"
+                      type="email"
+                      className={`form-control rounded ${errors.email?.message != null ? "is-invalid" : ""}`}
+                      required
+                    />
+                    {errors.email && <p className="text-danger">{errors.email.message}</p>}
+
+
+                  </div>
+                  <div className="form-group">
+
+                    <label className="py-2 " htmlFor="senha">
+                      Senha:
+                    </label>
+
+
+                    <input
+                      {...register("senha", { pattern: { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" } })}
+                      name="senha"
+                      type={showPassword ? "text" : "password"}
+                      className={`form-control rounded ${errors.senha?.message != null ? "is-invalid" : ""}`}
+                      required
+                    />
+                    {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
+                    
+                  </div>
+                  <div className="form-group">
+                    
+                  <label className="py-2 " htmlFor="senha">
+                      Confirmar Senha:
+                    </label>
+                  <input
+                      {...register("confirmaSenha", 
+                      { pattern: 
+                        { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, 
+                        message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" 
+                      } })
+                    }
+                     name="confirmaSenha"
+                     type={showPassword ? "text" : "password"}
+                    
+                      className={`form-control rounded ${errors.confirmaSenha?.message != null ? "is-invalid" : ""}`}
+                      required
+                    />
+                    {errors.confirmaSenha && <p className="text-danger">{errors.confirmaSenha.message}</p>}
                   </div>
                   <div className="pt-4 d-flex justify-content-center">
                     <button
@@ -170,13 +208,15 @@ const RegisterPage = () => {
                   </div>
                   <div className="mt-3 text-sm text-center">
                     <p className="fs-6">
-                      <a style={{ cursor: "pointer" }}>  Não Tenha uma Conta?  Registre-se</a>
+                      <a  onClick={handleLogin} style={{ cursor: "pointer" }}>  Jà Tem uma Conta? Faço seu Login</a>
                     </p>
                   </div>
                 </form>
               </div>
             </div>
           </div>
+        </div>
+
         </div>
       </div>
     </div>
