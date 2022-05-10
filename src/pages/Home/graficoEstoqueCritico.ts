@@ -18,7 +18,7 @@ const GraficoEstoqueCritico: ChartType = {
         },
     },
     type: "donut",
-    series: [44, 55, 41, 17, 15],
+    series: [15,85],
 
     responsive: [{
         breakpoint: 1000,

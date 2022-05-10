@@ -5,7 +5,7 @@ const GraficoLinha: ChartType = {
     
     options: {
         title: {
-            text: "Produto Mais Vendido da seman",
+            text: "Produto Mais Vendido da semana",
             align: 'left',
             margin: 10,
             offsetX: 0,

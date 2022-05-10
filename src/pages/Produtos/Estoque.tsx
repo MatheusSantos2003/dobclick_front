@@ -449,7 +449,7 @@ const EstoquePage = () => {
   return (
     <Layout>
       {isPageLoading && <Preloader />}
-      <h2> Estoque </h2>
+      <h2> Produto </h2>
       <ToastContainer
         position="top-right"
         autoClose={5000}
