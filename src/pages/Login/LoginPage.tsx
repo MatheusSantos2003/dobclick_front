@@ -142,8 +142,7 @@ const LoginPage = () => {
                   </div>
                   <div className="mt-3 text-sm text-center">
                     <p className="fs-6">
-                    <a onClick={handleRegister} style={{ cursor: "pointer" }}>  Não Tenha uma Conta?  Registre-se</a>
-                    </p>
+                    <a onClick={handleRegister} style={{ cursor: "pointer" }}>  Não Tenha uma Conta?  Registre-se</a>                    </p>
                   </div>
                 </form>
               </div>

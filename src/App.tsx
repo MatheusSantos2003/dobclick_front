@@ -5,7 +5,7 @@ import Layout from './components/layout/Layout/Layout';
 import { BrowserRouter, Route, Routes, HashRouter } from 'react-router-dom';
 import EstoquePage from './pages/Produtos/Estoque';
 import Providers from './Providers';
-import Graficos from './pages/graficos/Graficos';
+import Graficos from './pages/Vendas/Vendas';
 import 'react-toastify/dist/ReactToastify.css';
 import LoginPage from './pages/Login/LoginPage';
 import RegisterPage from './pages/Register/RegisterPage';
