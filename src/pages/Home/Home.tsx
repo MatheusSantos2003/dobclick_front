@@ -4,7 +4,7 @@ import Chart from "react-apexcharts";
 import GraficoSemanaOptions from "./graficoSemana";
 import GraficoEstoqueCritico from "./graficoEstoqueCritico";
 import GraficoLinha from "./graficoLinha";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import User from "../../models/User.model";
 import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
@@ -14,6 +14,7 @@ import CircularProgress, {
     circularProgressClasses,
     CircularProgressProps,
 } from '@mui/material/CircularProgress';
+import { AuthContext } from "../../context/AuthContext";
 
 
 
@@ -34,7 +35,7 @@ function CircularProgressEstoqueCriticoVermelho(props: CircularProgressProps) {
             />
             <CircularProgress
                 variant="indeterminate"
-                disableShrink
+              
                 sx={{
                     color: (theme) => (theme.palette.mode === 'light' ? '#FF1A3C' : '#FF1A3C'),
                     animationDuration: '550ms',
@@ -92,22 +93,18 @@ function Home() {
     let userData: User = new User();
     const [usuarioName, setUsuario] = useState<string | undefined>("");
     const navigate = useNavigate();
-
+    const context = useContext(AuthContext);
 
 
 
     useEffect(() => {
-        var token: any = JSON.parse(localStorage.getItem("userToken") || 'null');
-
-        if (token != null) {
-            userData = jwtDecode(token);
-
-            setUsuario(userData.nome);
-        }
-
-        if (userData?.Id == null) {
+        if (context?.isAuthenticated == false) {
             navigate("/");
+        }else{
+            setUsuario(context?.user?.nome);
         }
+
+    
     });
     return (
 

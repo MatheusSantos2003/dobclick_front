@@ -18,7 +18,7 @@ const RegisterPage = () => {
 
   const SubmitRegisterForm = async (values: any) => {
       // alert(values.senha + "  _  "+values.confirmaSenha);
-      console.log(values);
+   
     if(values.senha != values.confirmaSenha){
       // toast.error("As Senhas São diferentes!", {
       //   type: "error",

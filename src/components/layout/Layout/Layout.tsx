@@ -17,6 +17,7 @@ import { faBars, faBoxArchive, faChartLine, faChevronLeft, faChevronRight, faDas
 import { Button, Container, Menu, MenuItem } from '@mui/material';
 import "../../../App.css";
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../context/AuthContext';
 const drawerWidth = 240;
 
 
@@ -97,6 +98,7 @@ const Layout: React.FC = ({ children }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openLogMenu = Boolean(anchorEl);
   const navigate = useNavigate();
+  const context = React.useContext(AuthContext);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -106,8 +108,8 @@ const Layout: React.FC = ({ children }) => {
 
   const Sair = () =>{
     setAnchorEl(null);
-    localStorage.removeItem("userToken");
-    navigate('/');
+    context.Logout();
+    // navigate('/');
   }
 
 

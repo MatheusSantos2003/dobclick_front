@@ -17,6 +17,7 @@ const GraficoEstoqueCritico: ChartType = {
             },
         },
     },
+    
     type: "donut",
     series: [15,85],
 

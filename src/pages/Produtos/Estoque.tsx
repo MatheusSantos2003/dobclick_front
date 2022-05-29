@@ -1,6 +1,6 @@
 import { Card, Dialog, DialogContent, DialogTitle, Table } from "@mui/material";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Preloader from "../../components/preloader/Preloader";
 import { useFetch } from "../../hooks/useFetch";
@@ -10,11 +10,18 @@ import axios from "axios";
 import { ResponseModel } from "../../models/Response.model";
 import { toast, ToastContainer } from "react-toastify";
 import Layout from "../../components/layout/Layout/Layout";
+import jwtDecode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+import User from "../../models/User.model";
+import { AuthContext } from "../../context/AuthContext";
 
 
 
 const EstoquePage = () => {
   const apiURL = import.meta.env.VITE_APIURL;
+  
+  let userData: User | null = new User();
+  const context = useContext(AuthContext);
 
   //Data Table Options
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -157,6 +164,7 @@ const EstoquePage = () => {
   const [openModalAddProduto, setopenModalAddProduto] = useState(false);
   const [openModalEditarProduto, setopenModalEditProduto] = useState(false);
   const [ProdutoEditing, setProdutoEditing] = useState<Produto>();
+
   let ProdutoEditiingnew: SetStateAction<Produto | undefined>;
 
   const [isLoading, setisLoading] = useState(false);
@@ -193,9 +201,8 @@ const EstoquePage = () => {
 
 
   const onSubmit = async (values: Produto) => {
+    values.usuarioId = userData?.Id;
     setisLoading(true);
-    // const {data,isFetching} =  await useFetch<Produto[]>('/produtos/cadastrar',HttpRequestType.POST,values);
-
     await axios.post<ResponseModel<Produto[]>>(apiURL + '/produtos/cadastrar', {
       data: values, validateStatus: function (status: number) {
         return status < 500;
@@ -285,7 +292,7 @@ const EstoquePage = () => {
 
 
       }).catch((error) => {
-        console.log(error);
+       
       });
 
 
@@ -293,7 +300,7 @@ const EstoquePage = () => {
 
   const listarProdutos = async () => {
 
-    await axios.get<ResponseModel<Produto[]>>(apiURL + '/produtos')
+    await axios.get<ResponseModel<Produto[]>>(apiURL + `/produtos/${userData?.Id}`)
       .then((response) => {
         var novalista: Produto[] = [];
         response.data.data?.map((prod) => {
@@ -431,9 +438,11 @@ const EstoquePage = () => {
   }
 
   useEffect(() => {
+    userData = context?.user;
     setisLoading(true);
     setIsPageLoading(true);
     listarProdutos();
+   
 
   }, []);
 
@@ -441,7 +450,7 @@ const EstoquePage = () => {
     useEffect(()=>{
       if(ProdutoEditing?.Id != 0 && ProdutoEditing?.Id != null){
         setopenModalEditProduto(true);
-        console.log(ProdutoEditing);
+      
       }
     },[ProdutoEditing])
 
@@ -640,6 +649,7 @@ const EstoquePage = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="row">
                 <div className="col-6 mb-3">
+                  <input type="hidden" value={userData?.Id} {...register("usuarioId")} />
                   <label
                     htmlFor="exampleInputPassword1"
                     className="form-label"

@@ -8,6 +8,7 @@ export class Produto {
     cor?: string;
     estoque?: number;
     fornecedorId?:number;
+    usuarioId?: number;
 
     constructor(){
         this.Id = 0;
