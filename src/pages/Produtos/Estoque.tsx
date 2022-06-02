@@ -202,6 +202,7 @@ const EstoquePage = () => {
 
   const onSubmit = async (values: Produto) => {
     values.usuarioId = userData?.Id;
+    console.log(values);
     setisLoading(true);
     await axios.post<ResponseModel<Produto[]>>(apiURL + '/produtos/cadastrar', {
       data: values, validateStatus: function (status: number) {
@@ -238,12 +239,14 @@ const EstoquePage = () => {
             progress: undefined,
           });
           setisLoading(false);
+          listarProdutos();
         }
 
 
       }).catch((error: ResponseModel<any>) => {
         console.log(error.message);
         setisLoading(false);
+        listarProdutos();
       });
 
   }
@@ -299,8 +302,10 @@ const EstoquePage = () => {
   }
 
   const listarProdutos = async () => {
-
-    await axios.get<ResponseModel<Produto[]>>(apiURL + `/produtos/${userData?.Id}`)
+    if(userData?.Id == undefined){
+      return;
+    }else{
+      await axios.post<ResponseModel<Produto[]>>(apiURL + "/produtos/listar",{"id":userData?.Id})
       .then((response) => {
         var novalista: Produto[] = [];
         response.data.data?.map((prod) => {
@@ -315,6 +320,8 @@ const EstoquePage = () => {
         console.log(error);
         setisLoading(false);
       });
+    }
+    
 
 
   }
@@ -438,13 +445,13 @@ const EstoquePage = () => {
   }
 
   useEffect(() => {
-    userData = context?.user;
     setisLoading(true);
     setIsPageLoading(true);
     listarProdutos();
    
 
   }, []);
+
 
   
     useEffect(()=>{

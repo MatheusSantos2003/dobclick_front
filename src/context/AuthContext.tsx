@@ -19,6 +19,15 @@ export const AuthProvider = (props: any) => {
     const [user, setUser] = useState<User | null>(new User());
 
 
+    useEffect(() => {
+        var usu = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+
+        if(usu != null){
+            console.log(usu);
+            setUser(usu);
+        }
+      }, []);
+    
 
     async function Login(user: User): Promise<ResponseModel<any>> {
         const response = await axios.post<ResponseModel<any>>(apiURL + "/usuarios/login", user);
@@ -31,21 +40,7 @@ export const AuthProvider = (props: any) => {
         } else {
             return response;
         }
-        // await axios.post<ResponseModel<any>>(apiURL + "/usuarios/login", user).then((res => {
 
-
-        //     if (res.data.success == true) {
-        //         setUser(jwtDecode(res.data.data));
-        //         setIsAuthenticated(true);
-
-        //     } else {
-        //         setIsAuthenticated(false);
-
-        //     }
-
-        // })).catch((error) => {
-        //     setIsAuthenticated(false);
-        // });
 
     }
 
