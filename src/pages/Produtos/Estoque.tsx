@@ -14,12 +14,13 @@ import jwtDecode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import User from "../../models/User.model";
 import { AuthContext } from "../../context/AuthContext";
-
+import CurrencyInput from 'react-currency-input-field';
+import CurrencyService from "../../services/CurrencyService";
 
 
 const EstoquePage = () => {
   const apiURL = import.meta.env.VITE_APIURL;
-  
+  const _currencyService = new CurrencyService();
   let userData: User | null = new User();
   const context = useContext(AuthContext);
 
@@ -201,9 +202,12 @@ const EstoquePage = () => {
 
 
   const onSubmit = async (values: Produto) => {
+    if (userData?.Id == undefined) {
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+    }
     values.usuarioId = userData?.Id;
-    console.log(values);
-    setisLoading(true);
+    values.preco = _currencyService.Formatar(values?.precoDisplay as string);
+
     await axios.post<ResponseModel<Produto[]>>(apiURL + '/produtos/cadastrar', {
       data: values, validateStatus: function (status: number) {
         return status < 500;
@@ -239,7 +243,7 @@ const EstoquePage = () => {
             progress: undefined,
           });
           setisLoading(false);
-          listarProdutos();
+
         }
 
 
@@ -253,6 +257,11 @@ const EstoquePage = () => {
 
   const onSubmitEdit = async (values: Produto) => {
     setisLoading(true);
+    if (userData?.Id == undefined) {
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+    }
+    values.usuarioId = userData?.Id;
+    values.preco = _currencyService.Formatar(values?.precoDisplay as string);
 
     await axios.put<ResponseModel<any>>(apiURL + "/produtos/editar", {
       data: values
@@ -295,33 +304,35 @@ const EstoquePage = () => {
 
 
       }).catch((error) => {
-       
+
       });
 
 
   }
 
   const listarProdutos = async () => {
-    if(userData?.Id == undefined){
+    if (userData?.Id == undefined) {
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+      listarProdutos();
       return;
-    }else{
-      await axios.post<ResponseModel<Produto[]>>(apiURL + "/produtos/listar",{"id":userData?.Id})
-      .then((response) => {
-        var novalista: Produto[] = [];
-        response.data.data?.map((prod) => {
-          novalista.push(prod);
-        })
-        setisLoading(false);
-        setIsPageLoading(false);
-        setProdutos(novalista);
-        handleClose();
-        reset();
-      }).catch((error) => {
-        console.log(error);
-        setisLoading(false);
-      });
+    } else {
+      await axios.post<ResponseModel<Produto[]>>(apiURL + "/produtos/listar", { "id": userData?.Id })
+        .then((response) => {
+          var novalista: Produto[] = [];
+          response.data.data?.map((prod) => {
+            novalista.push(prod);
+          })
+          setisLoading(false);
+          setIsPageLoading(false);
+          setProdutos(novalista);
+          handleClose();
+          reset();
+        }).catch((error) => {
+          console.log(error);
+          setisLoading(false);
+        });
     }
-    
+
 
 
   }
@@ -343,7 +354,7 @@ const EstoquePage = () => {
         console.log(error);
       })
 
-      setopenModalEditProduto(true);
+    setopenModalEditProduto(true);
   }
 
   function exlcuirProduto(listaIds: number[]) {
@@ -445,21 +456,22 @@ const EstoquePage = () => {
   }
 
   useEffect(() => {
+    userData = context.user;
     setisLoading(true);
     setIsPageLoading(true);
     listarProdutos();
-   
+
 
   }, []);
 
 
-  
-    useEffect(()=>{
-      if(ProdutoEditing?.Id != 0 && ProdutoEditing?.Id != null){
-        setopenModalEditProduto(true);
-      
-      }
-    },[ProdutoEditing])
+
+  useEffect(() => {
+    if (ProdutoEditing?.Id != 0 && ProdutoEditing?.Id != null) {
+      setopenModalEditProduto(true);
+
+    }
+  }, [ProdutoEditing])
 
 
   return (
@@ -483,150 +495,169 @@ const EstoquePage = () => {
         </div>
       </div>
 
-            {/* Modal de editar Produto */}
-            {openModalEditarProduto &&  
-      <Card raised={true} sx={{marginBottom: 10}} >
-        {!isLoading &&
-          <DialogTitle sx={{ textAlign: "center" }}>Editar Produto</DialogTitle>
-        }
-        <DialogContent>
-          {isLoading &&
-            <div className="m-5 p-5">
-              <Preloader />
-            </div>
-          }
-
+      {/* Modal de editar Produto */}
+      {openModalEditarProduto &&
+        <Card raised={true} sx={{ marginBottom: 10 }} >
           {!isLoading &&
-            <form onSubmit={handleSubmit(onSubmitEdit)}>
-              <div className="row">
-                <div className="col-6 mb-3">
-                  <input {...register("Id")} type="hidden" value={ProdutoEditing?.Id} />
-                  <label
-                    htmlFor="exampleInputPassword1"
-                    className="form-label"
-                  >Código
-                  </label>
-                  <input
-                    {...register("codigo", { required: { value: true, message: "Campo Necessário!" } })}
-                    type="text"
-                    defaultValue={ProdutoEditing?.codigo}
-                    placeholder="Código"
-                    className={`form-control ${errors.codigo?.message != null ? "is-invalid" : ""}`}
-                    id="exampleInputPassword1" />
-                  {errors.codigo && <p className="text-danger">{errors.codigo.message}</p>}
-                </div>
-                <div className="col-6 mb-3">
-                  <label htmlFor="exampleInputEmail1" className="form-label">Descrição</label>
-                  <input {...register("descricao", { required: { value: true, message: "Campo Necessário!" } })}
-                    type="text"
-                    defaultValue={ProdutoEditing?.descricao}
-                    placeholder="Descrição"
-                    className={`form-control ${errors.descricao?.message != null ? "is-invalid" : ""}`}
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp" />
-                  {errors.descricao && <p className="text-danger">{errors.descricao?.message}</p>}
-                </div>
+            <DialogTitle sx={{ textAlign: "center" }}>Editar Produto</DialogTitle>
+          }
+          <DialogContent>
+            {isLoading &&
+              <div className="m-5 p-5">
+                <Preloader />
               </div>
-              <div className="row">
-                <div className="col-3 mb-3">
-                  <label htmlFor="exampleInputEmail1"
-                    className="form-label">Tamanho
-                  </label>
-                  <input
-                    {...register("tamanho", { required: { value: true, message: "Campo Necessário!" } })}
-                    type="text"
-                    defaultValue={ProdutoEditing?.tamanho}
-                    className={`form-control ${errors.tamanho?.message != null ? "is-invalid" : ""}`}
-                    placeholder="Tamanho"
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp" />
+            }
+
+            {!isLoading &&
+              <form onSubmit={handleSubmit(onSubmitEdit)}>
+                <div className="row">
+                  <div className="col-6 mb-3">
+                    <input {...register("Id")} type="hidden" value={ProdutoEditing?.Id} />
+                    <label
+                      htmlFor="exampleInputPassword1"
+                      className="form-label"
+                    >Código
+                    </label>
+                    <input
+                      {...register("codigo", { required: { value: true, message: "Campo Necessário!" } })}
+                      type="text"
+                      defaultValue={ProdutoEditing?.codigo}
+                      placeholder="Código"
+                      className={`form-control ${errors.codigo?.message != null ? "is-invalid" : ""}`}
+                      id="exampleInputPassword1" />
+                    {errors.codigo && <p className="text-danger">{errors.codigo.message}</p>}
+                  </div>
+                  <div className="col-6 mb-3">
+                    <label htmlFor="exampleInputEmail1" className="form-label">Descrição</label>
+                    <input {...register("descricao", { required: { value: true, message: "Campo Necessário!" } })}
+                      type="text"
+                      defaultValue={ProdutoEditing?.descricao}
+                      placeholder="Descrição"
+                      className={`form-control ${errors.descricao?.message != null ? "is-invalid" : ""}`}
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp" />
+                    {errors.descricao && <p className="text-danger">{errors.descricao?.message}</p>}
+                  </div>
                 </div>
-                <div className="col-3 mb-3">
-                  <label htmlFor="exampleInputEmail1" className="form-label">Gênero</label>
-                  <select
-                    {...register("genero", { required: { value: true, message: "Campo Necessário!" } })}
-                    className={`form-select ${errors.genero?.message != null ? "is-invalid" : ""}`}
-                    defaultValue={ProdutoEditing?.genero}
-                  >
-                    <option value=""  ></option>
-                    <option value="MASCULINO">Masculino</option>
-                    <option value="FEMININO">Feminino</option>
-                    <option value="SEM GENERO">Sem Gênero</option>
-                  </select>
-                  {errors.genero && <p className="text-danger">{errors.genero?.message}</p>}
-                </div>
-                <div className="col-3 mb-3">
-                  <label
-                    htmlFor="exampleInputEmail1"
-                    className="form-label">
-                    Cor
-                  </label>
-                  <input
-                    {...register("cor", { required: { value: true, message: "Campo Necessário!" } })}
-                    type="text"
-                    defaultValue={ProdutoEditing?.cor}
-                    className={`form-control ${errors.cor?.message != null ? "is-invalid" : ""}`}
-                    placeholder="Cor"
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp" />
-                </div>
-                <div className="col-3 mb-3">
-                  <label
-                    htmlFor="exampleInputEmail1"
-                    className="form-label">
-                    Marca
-                  </label>
-                  <select
-                    {...register("marca", { required: { value: true, message: "Campo Necessário!" } })}
-                    className={`form-select ${errors.marca?.message != null ? "is-invalid" : ""}`}
-                    defaultValue={ProdutoEditing?.marca}
-                  >
-                    <option value=''></option>
-                    <option value="Marca 1">Marca 1</option>
-                    <option value="Marca 3">Marca 3</option>
-                    <option value="Marca 2">Marca 2</option>
-                  </select>
+                <div className="row">
+                  <div className="col-3 mb-3">
+                    <label htmlFor="exampleInputEmail1"
+                      className="form-label">Tamanho
+                    </label>
+                    <input
+                      {...register("tamanho", { required: { value: true, message: "Campo Necessário!" } })}
+                      type="text"
+                      defaultValue={ProdutoEditing?.tamanho}
+                      className={`form-control ${errors.tamanho?.message != null ? "is-invalid" : ""}`}
+                      placeholder="Tamanho"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp" />
+                  </div>
+                  <div className="col-3 mb-3">
+                    <label htmlFor="exampleInputEmail1" className="form-label">Gênero</label>
+                    <select
+                      {...register("genero", { required: { value: true, message: "Campo Necessário!" } })}
+                      className={`form-select ${errors.genero?.message != null ? "is-invalid" : ""}`}
+                      defaultValue={ProdutoEditing?.genero}
+                    >
+                      <option value=""  ></option>
+                      <option value="MASCULINO">Masculino</option>
+                      <option value="FEMININO">Feminino</option>
+                      <option value="SEM GENERO">Sem Gênero</option>
+                    </select>
+                    {errors.genero && <p className="text-danger">{errors.genero?.message}</p>}
+                  </div>
+                  <div className="col-3 mb-3">
+                    <label
+                      htmlFor="exampleInputEmail1"
+                      className="form-label">
+                      Cor
+                    </label>
+                    <input
+                      {...register("cor", { required: { value: true, message: "Campo Necessário!" } })}
+                      type="text"
+                      defaultValue={ProdutoEditing?.cor}
+                      className={`form-control ${errors.cor?.message != null ? "is-invalid" : ""}`}
+                      placeholder="Cor"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp" />
+                  </div>
+                  <div className="col-3 mb-3">
+                    <label
+                      htmlFor="exampleInputEmail1"
+                      className="form-label">
+                      Marca
+                    </label>
+                    <select
+                      {...register("marca", { required: { value: true, message: "Campo Necessário!" } })}
+                      className={`form-select ${errors.marca?.message != null ? "is-invalid" : ""}`}
+                      defaultValue={ProdutoEditing?.marca}
+                    >
+                      <option value=''></option>
+                      <option value="Marca 1">Marca 1</option>
+                      <option value="Marca 3">Marca 3</option>
+                      <option value="Marca 2">Marca 2</option>
+                    </select>
+
+                  </div>
 
                 </div>
+                <div className="row">
+                  <div className="col-2 mb-3">
+                    <label
+                      htmlFor="exampleInputEmail1"
+                      className="form-label">
+                      Estoque
+                    </label>
+                    <input
+                      {...register("estoque", { required: { value: true, message: "Campo Necessário!" } })}
+                      type="number"
+                      defaultValue={ProdutoEditing?.estoque}
+                      className={`form-control ${errors.estoque?.message != null ? "is-invalid" : ""}`}
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp" />
+                  </div>
+                  <div className="col-2 mb-3">
+                    <label
+                      htmlFor="exampleInputEmail1"
+                      className="form-label">
+                      Preço UN
+                    </label>
+                    <CurrencyInput
+                      id="input-example"
+                      decimalSeparator=","
+                      groupSeparator=""
+                      defaultValue={ProdutoEditing?.preco}
+                      placeholder="R$ 0.00"
+                      intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                      {...register("precoDisplay", { required: { value: true, message: "Campo Necessário!" } })}
+                      className={`form-control ${errors.precoDisplay?.message != null ? "is-invalid" : ""}`}
+                    >
+                    </CurrencyInput>
+                  </div>
 
-              </div>
-              <div className="row">
-                <div className="col-2 mb-3">
-                  <label
-                    htmlFor="exampleInputEmail1"
-                    className="form-label">
-                    Estoque
-                  </label>
-                  <input
-                    {...register("estoque", { required: { value: true, message: "Campo Necessário!" } })}
-                    type="number"
-                    defaultValue={ProdutoEditing?.estoque}
-                    className={`form-control ${errors.estoque?.message != null ? "is-invalid" : ""}`}
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp" />
+                  <div className="col-6 mb-3">
+                    <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
+                    <select
+                      {...register("fornecedorId", { required: { value: true, message: "Campo Necessário!" } })}
+                      className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}
+                      defaultValue={ProdutoEditing?.fornecedorId}>
+                      <option key={''} value=''></option>
+                      <option key={1} value={1}>Fornecedor 1</option>
+                      <option key={2} value={2}>Fornecedor 2</option>
+                      <option key={3} value={3}>Fornecedor 3</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="col-8 mb-3">
-                  <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
-                  <select
-                    {...register("fornecedorId", { required: { value: true, message: "Campo Necessário!" } })}
-                    className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}
-                    defaultValue={ProdutoEditing?.fornecedorId}>
-                    <option key={''} value=''></option>
-                    <option key={1} value={1}>Fornecedor 1</option>
-                    <option key={2} value={2}>Fornecedor 2</option>
-                    <option key={3} value={3}>Fornecedor 3</option>
-                  </select>
+                <div className="d-flex justify-content-end align-items-end">
+                  <button className="btn btn-danger mx-1" type="button" onClick={ModalEditarProdutoCancelar}>Cancelar</button>
+                  <button className="btn btn-primary mx-1" placeholder="" type="submit"> Alterar Produto </button>
                 </div>
-              </div>
-              <div className="d-flex justify-content-end align-items-end">
-                <button className="btn btn-danger mx-1" type="button" onClick={ModalEditarProdutoCancelar}>Cancelar</button>
-                <button className="btn btn-primary mx-1" placeholder="" type="submit"> Alterar Produto </button>
-              </div>
-            </form>}
+              </form>}
 
 
-        </DialogContent>
-      </Card>}
+          </DialogContent>
+        </Card>}
 
       {/* <TableComponent  data={produtos} colunas={columns} /> */}
       <MUIDataTable
@@ -739,7 +770,6 @@ const EstoquePage = () => {
                   </select>
 
                 </div>
-
               </div>
               <div className="row">
                 <div className="col-2 mb-3">
@@ -755,7 +785,25 @@ const EstoquePage = () => {
                     id="exampleInputEmail1"
                     aria-describedby="emailHelp" />
                 </div>
-                <div className="col-8 mb-3">
+                <div className="col-3 mb-3">
+                  <label
+                    htmlFor="exampleInputEmail1"
+                    className="form-label">
+                    Preço UN
+                  </label>
+
+                  <CurrencyInput
+                    id="input-example"
+                    decimalSeparator=","
+                    groupSeparator=""
+                    placeholder="R$ 0.00"
+                    intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                    {...register("precoDisplay", { required: { value: true, message: "Campo Necessário!" } })}
+                    className={`form-control ${errors.precoDisplay?.message != null ? "is-invalid" : ""}`}
+                  >
+                  </CurrencyInput>
+                </div>
+                <div className="col-7 mb-3">
                   <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
                   <select
                     {...register("fornecedorId", { required: { value: true, message: "Campo Necessário!" } })}
@@ -782,6 +830,10 @@ const EstoquePage = () => {
     </Layout>
   )
 
+
+}
+
+const Formatter = () => {
 
 }
 

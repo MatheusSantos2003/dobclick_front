@@ -9,6 +9,8 @@ export class Produto {
     estoque?: number;
     fornecedorId?:number;
     usuarioId?: number;
+    precoDisplay?: string;
+    preco?: number;
 
     constructor(){
         this.Id = 0;
