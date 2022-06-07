@@ -5,6 +5,9 @@ import { toast, ToastContainer } from "react-toastify";
 import { ResponseModel } from "../../models/Response.model";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye,faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
 
 
 
@@ -12,14 +15,15 @@ import "./RegisterPage.css";
 const apiURL = import.meta.env.VITE_APIURL;
 
 const RegisterPage = () => {
-  const { register, handleSubmit, reset,setError,clearErrors, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, setError, clearErrors, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(true);
+  const [showConfirmPassword,setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const SubmitRegisterForm = async (values: any) => {
-      // alert(values.senha + "  _  "+values.confirmaSenha);
-   
-    if(values.senha != values.confirmaSenha){
+    // alert(values.senha + "  _  "+values.confirmaSenha);
+
+    if (values.senha != values.confirmaSenha) {
       // toast.error("As Senhas São diferentes!", {
       //   type: "error",
       //   theme: "colored",
@@ -31,8 +35,8 @@ const RegisterPage = () => {
       //   draggable: true,
       //   progress: undefined,
       // });
-      
-      setError("confirmaSenha",{type:"custom",message:"Senhas Diferentes!"})
+
+      setError("confirmaSenha", { type: "custom", message: "Senhas Diferentes!" })
 
       return;
     }
@@ -53,7 +57,7 @@ const RegisterPage = () => {
           draggable: true,
           progress: undefined,
         });
-        localStorage.setItem('userToken', JSON.stringify(res.data.data));
+        localStorage.setItem('AppUsuario', JSON.stringify(res.data.data));
         navigate("/Home");
       } else {
 
@@ -77,13 +81,19 @@ const RegisterPage = () => {
     setShowPassword(!showPassword);
   }
 
-  const ClearErrorForm = () =>{
+  const handleShowConfirmPassword = () =>{
+    setShowConfirmPassword(!showConfirmPassword);
+  }
+
+  const ClearErrorForm = () => {
     clearErrors("confirmaSenha");
   }
 
-  const handleLogin = () =>{
+  const handleLogin = () => {
     navigate("/");
   }
+
+
 
   useEffect(() => {
 
@@ -103,119 +113,129 @@ const RegisterPage = () => {
       }}
     >
       <div className="login-form">
-        <div className="container-fluid" style={{paddingTop:"5vh",paddingBottom:"5vh"}}>
-        <div className="row  mx-auto">
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-          <div className="col-md-6 mx-auto">
-            <div className="card pt-3 px-2 rounded shadow-lg">
-              <h1 className="mb-0 text-center">
-                <strong>Cadastrar</strong>
-              </h1>
+        <div className="container-fluid" style={{ paddingTop: "5vh", paddingBottom: "5vh" }}>
+          <div className="row  mx-auto">
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
+            <div className="col-md-6 mx-auto">
+              <div className="card pt-3 px-2 rounded shadow-lg">
+                <h1 className="mb-0 text-center">
+                  <strong>Cadastrar</strong>
+                </h1>
 
-              <div className="card-body pb-0 mb-0">
-                <form onSubmit={handleSubmit(SubmitRegisterForm)} className="form">
-                  <div className="form-group">
+                <div className="card-body pb-0 mb-0">
+                  <form onSubmit={handleSubmit(SubmitRegisterForm)} className="form">
+                    <div className="form-group">
 
-                    <label className="py-2 text-center" htmlFor="">
-                      Nome:
-                    </label>
-
-
-                    <input
-                      {...register("nome", { required: { value: false, message: "Necessário informar o Nome" } })}
-                      name="nome"
-                      type="text"
-                      className={`form-control rounded ${errors.nome?.message != null ? "is-invalid" : ""}`}
-                      required
-                    />
-                    {errors.nome && <p className="text-danger">{errors.nome.message}</p>}
-
-                  </div>
-                  <div className="form-group">
+                      <label className="py-2 text-center" htmlFor="">
+                        Nome:
+                      </label>
 
 
-                    <label className="py-2 text-center" htmlFor="">
-                      Email:
-                    </label>
+                      <input
+                        {...register("nome", { required: { value: false, message: "Necessário informar o Nome" } })}
+                        name="nome"
+                        type="text"
+                        className={`form-control rounded ${errors.nome?.message != null ? "is-invalid" : ""}`}
+                        required
+                      />
+                      {errors.nome && <p className="text-danger">{errors.nome.message}</p>}
+
+                    </div>
+                    <div className="form-group">
 
 
-                    <input
-                      {...register("email", { required: { value: false, message: "Necessário informar o Email" }})}
-                      name="email"
-                      type="email"
-                      className={`form-control rounded ${errors.email?.message != null ? "is-invalid" : ""}`}
-                      required
-                    />
-                    {errors.email && <p className="text-danger">{errors.email.message}</p>}
+                      <label className="py-2 text-center" htmlFor="">
+                        Email:
+                      </label>
 
 
-                  </div>
-                  <div className="form-group">
+                      <input
+                        {...register("email", { required: { value: false, message: "Necessário informar o Email" } })}
+                        name="email"
+                        type="email"
+                        className={`form-control rounded ${errors.email?.message != null ? "is-invalid" : ""}`}
+                        required
+                      />
+                      {errors.email && <p className="text-danger">{errors.email.message}</p>}
 
-                    <label className="py-2 " htmlFor="senha">
-                      Senha:
-                    </label>
 
+                    </div>
+                    <div className="row">
+                      <div className="form-group col-11">
+                        <label className="py-2 " htmlFor="senha">
+                          Senha:
+                        </label>
+                        <input
+                          {...register("senha", { pattern: { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" } })}
+                          name="senha"
+                          type={showPassword ? "text" : "password"}
+                          className={`form-control rounded ${errors.senha?.message != null ? "is-invalid" : ""}`}
+                          required
+                        />
+                        {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
 
-                    <input
-                      {...register("senha", { pattern: { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" } })}
-                      name="senha"
-                      type={showPassword ? "text" : "password"}
-                      className={`form-control rounded ${errors.senha?.message != null ? "is-invalid" : ""}`}
-                      required
-                    />
-                    {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
-                    
-                  </div>
-                  <div className="form-group">
-                    
-                  <label className="py-2 " htmlFor="senha">
-                      Confirmar Senha:
-                    </label>
-                  <input
-                      {...register("confirmaSenha", 
-                      { pattern: 
-                        { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, 
-                        message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" 
-                      } })
-                    }
-                     name="confirmaSenha"
-                     type={showPassword ? "text" : "password"}
-                    
-                      className={`form-control rounded ${errors.confirmaSenha?.message != null ? "is-invalid" : ""}`}
-                      required
-                    />
-                    {errors.confirmaSenha && <p className="text-danger">{errors.confirmaSenha.message}</p>}
-                  </div>
-                  <div className="pt-4 d-flex justify-content-center">
-                    <button
-                      className="btn btn-lg custom-login-btn"
-                      type="submit"
-                      style={{ backgroundColor: "#0b8ad9", color: "white" }}
-                    >
-                      <strong>Cadastrar-se</strong>
-                    </button>
-                  </div>
-                  <div className="mt-3 text-sm text-center">
-                    <p className="fs-6">
-                      <a  onClick={handleLogin} style={{ cursor: "pointer" }}>  Jà Tem uma Conta? Faço seu Login</a>
-                    </p>
-                  </div>
-                </form>
+                      </div>
+                      <div className="form-group  col-1">
+                        <button type="button" onClick={handleShowPassword} className="btn btn-primary showPasswordBtn pt-2">{showPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}</button>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="form-group col-11">
+
+                        <label className="py-2 " htmlFor="senha">
+                          Confirmar Senha:
+                        </label>
+                        <input
+                          {...register("confirmaSenha",
+                            {
+                              pattern:
+                              {
+                                value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g,
+                                message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!"
+                              }
+                            })
+                          }
+                          name="confirmaSenha"
+                          type={showConfirmPassword ? "text" : "password"}
+
+                          className={`form-control rounded ${errors.confirmaSenha?.message != null ? "is-invalid" : ""}`}
+                          required
+                        />
+                        {errors.confirmaSenha && <p className="text-danger">{errors.confirmaSenha.message}</p>}
+                      </div>
+                      <div className="form-group  col-1">
+                        <button type="button" onClick={handleShowConfirmPassword} className="btn btn-primary showPasswordBtn pt-2">{showConfirmPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}</button>
+                      </div>
+                    </div>
+                    <div className="pt-4 d-flex justify-content-center">
+                      <button
+                        className="btn btn-lg custom-login-btn"
+                        type="submit"
+                        style={{ backgroundColor: "#0b8ad9", color: "white" }}
+                      >
+                        <strong>Cadastrar-se</strong>
+                      </button>
+                    </div>
+                    <div className="mt-3 text-sm text-center">
+                      <p className="fs-6">
+                        <a onClick={handleLogin} style={{ cursor: "pointer" }}>  Jà Tem uma Conta? Faço seu Login</a>
+                      </p>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         </div>
       </div>

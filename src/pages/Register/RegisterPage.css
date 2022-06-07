@@ -10,3 +10,8 @@
 .custom-login-btn ::hover{
     background-color: '#053259';
 }
+
+
+.showPasswordBtn {
+    margin-top: 2.4rem !important;
+}

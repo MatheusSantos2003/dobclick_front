@@ -8,6 +8,8 @@ import "./LoginPage.css";
 import { AuthContext, AuthProvider } from "../../context/AuthContext";
 import User from "../../models/User.model";
 import jwtDecode from "jwt-decode";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -138,7 +140,8 @@ const LoginPage = () => {
 
               <div className="card-body pb-0 mb-0">
                 <form onSubmit={handleSubmit(SubmitLoginForm)} className="form">
-                  <div className="form-group">
+                  <div className="row">
+                  <div className="form-group col-11">
 
                     <label className="py-2 text-center" htmlFor="">
                       Email:{" "}
@@ -155,23 +158,29 @@ const LoginPage = () => {
                     {errors.email && <p className="text-danger">{errors.email.message}</p>}
 
                   </div>
-                  <div className="form-group">
+                  </div>
+                  <div className="row">
+                    <div className="form-group col-11">
 
 
-                    <label className="py-1 pe-5 " htmlFor="senha">
-                      Senha:
-                    </label>
+                      <label className="py-1 pe-5 " htmlFor="senha">
+                        Senha:
+                      </label>
 
 
-                    <input
-                      {...register("senha", { pattern: { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" } })}
-                      name="senha"
-                      type={showPassword ? "text" : "password"}
-                      className={`form-control rounded ${errors.senha?.message != null ? "is-invalid" : ""}`}
-                      required
-                    />
-                    {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
+                      <input
+                        {...register("senha", { pattern: { value: /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g, message: "Senha inválida! A Senha deve conter no mínimo 8 caracteres,sendo eles pelo menos 1 letra maiuscula, 1 letra minuscula, um numero e 1 caracter especial!" } })}
+                        name="senha"
+                        type={showPassword ? "text" : "password"}
+                        className={`form-control rounded ${errors.senha?.message != null ? "is-invalid" : ""}`}
+                        required
+                      />
+                      {errors.senha && <p className="text-danger">{errors.senha.message}</p>}
 
+                    </div>
+                    <div className="form-group  col-1">
+                      <button type="button" onClick={handleShowPassword} className="btn btn-primary showPasswordBtnLogin">{showPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}</button>
+                    </div>
                   </div>
                   <div className="pt-4 d-flex justify-content-center">
                     <button

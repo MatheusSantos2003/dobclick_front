@@ -1,4 +1,4 @@
-import { Card, Dialog, DialogContent, DialogTitle, Table } from "@mui/material";
+import { Card, Chip, Dialog, DialogContent, DialogTitle, Table } from "@mui/material";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
 import { SetStateAction, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -473,6 +473,16 @@ const EstoquePage = () => {
     }
   }, [ProdutoEditing])
 
+
+  const CustomChip = ({  }) => {
+    return (
+        <Chip
+            variant="outlined"
+            color="secondary"
+      
+        />
+    );
+};
 
   return (
     <Layout>
