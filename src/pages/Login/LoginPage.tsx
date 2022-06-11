@@ -188,7 +188,7 @@ const LoginPage = () => {
                       type="submit"
                       style={{ backgroundColor: "#0b8ad9", color: "white" }}
                     >
-                      <strong>Login</strong>
+                      <strong>Entrar</strong>
                     </button>
                   </div>
                   <div className="mt-3 text-sm text-center">

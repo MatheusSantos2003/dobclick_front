@@ -11,6 +11,7 @@ export class Produto {
     usuarioId?: number;
     precoDisplay?: string;
     preco?: number;
+    label?: string;
 
     constructor(){
         this.Id = 0;

@@ -1,28 +1,47 @@
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Autocomplete, Box, Card, Dialog, DialogContent, DialogTitle, MenuItem, Select, SelectChangeEvent, Tab, Tabs, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useEffect, useState, useContext } from "react";
 import Layout from "../../components/layout/Layout/Layout"
 import Venda from "../../models/Venda.model";
 import Preloader from "../../components/preloader/Preloader";
 import User from "../../models/User.model";
+
 import { AuthContext } from "../../context/AuthContext";
+import { VendasColumns } from './VendasColumns';
+
 
 
 import { Produto } from "../../models/Produto.model";
 const apiURL = import.meta.env.VITE_APIURL;
 import { ResponseModel } from "../../models/Response.model";
 import axios from "axios";
+import CurrencyInput from "react-currency-input-field";
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
 
 const Vendas = () => {
+
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [openModalAddVenda, setopenModalAddVenda] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [vendas, setVenda] = useState<Venda[]>([]);
-  const [produtos, setProdutos] = useState<Produto[] | null>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [value, setValue] = useState(0);
+
+
+  const handleTabsChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
   var idsSelecionados: number[] = [];
   let userData: User | null = new User();
+
+  var column = VendasColumns;
 
   const context = useContext(AuthContext);
 
@@ -40,7 +59,7 @@ const Vendas = () => {
   };
 
   useEffect(() => {
-    userData = context.user;
+    userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
     setisLoading(false);
     setIsPageLoading(true);
     getProdutos();
@@ -62,15 +81,14 @@ const Vendas = () => {
           response.data.data?.map((prod) => {
             novalista.push(prod);
           })
+
           listaProdutos = novalista;
         }).catch((error) => {
           console.log(error);
 
         });
     }
-
-
-
+    setProdutos(listaProdutos);
 
   }
   // useEffect(() => {
@@ -80,7 +98,10 @@ const Vendas = () => {
   //   }
   // }, [ProdutoEditing])
 
-  const onSubmit = async (values: any) => {
+
+
+  const onSubmit = (values: any) => {
+    console.log(values);
     // if (userData?.Id == undefined) {
     //   userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
     // }
@@ -134,82 +155,39 @@ const Vendas = () => {
 
   }
 
+  const optionsSelect = produtos.map(function (prod: Produto) {
+    prod.label = prod.codigo + " - " + prod.descricao + " - " + prod.cor + " - " + prod.genero + " - " + prod.marca;
+    return prod;
+    // return { Id: prod.Id, label: prod.codigo+" - "+prod.descricao+" - "+prod.cor+" - "+prod.genero+" - "+prod.marca };
+  })
 
-  var columns = [
-    {
-      name: "Id",
-      label: "Id",
-      options: {
-        display: false,
-        filter: false,
-        sort: false,
-      }
-    },
-    {
-      name: "Produto",
-      label: "Produto",
-      options: {
-        filter: true,
-        sort: true,
-      }
-    },
-    {
-      name: "Quantidade",
-      label: "Quantidade",
-      options: {
-        filter: true,
-        sort: true,
-      }
-    },
-    {
-      name: "Cliente",
-      label: "Cliente",
-      options: {
-        filter: true,
-        sort: true,
-      }
-    },
-    {
-      name: "DataVenda",
-      label: "Data da Venda",
-      options: {
-        filter: true,
-        sort: true,
-      }
-    },
-    {
-      name: "Valor Total",
-      label: "Valor Total",
-      options: {
-        filter: true,
-        sort: true,
-      }
-    }
-  ]
+  function TabPanel(props: TabPanelProps) {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box sx={{ p: 3 }}>
+            {children}
+          </Box>
+        )}
+      </div>
+    );
+  }
+
+
 
 
   const options: MUIDataTableOptions = {
     filterType: 'checkbox',
     onRowClick: ((rowdata, rowmeta) => {
       setIsPageLoading(true);
-      //   selecionarProduto(Number(rowdata[0]));
-
-    }),
-    onRowsDelete: ((rowsDeleted, newTableData) => {
-      //   var listaIndices: number[] = [];
-
-      //   rowsDeleted.data.map((values) => {
-      //     listaIndices.push(values.index);
-      //   });
-
-      //   var listaIds: any[] = [];
-
-      //   listaIndices.map((indice) => {
-      //     listaIds?.push(produtos[indice].Id);
-      //   });
-
-
-      //   exlcuirProduto(listaIds);
     }),
     rowsSelected: idsSelecionados,
     print: false,
@@ -252,67 +230,143 @@ const Vendas = () => {
 
 
 
-
   return (
     <Layout>
-      <h2>Vendas</h2>
+      <div className="">
+        <Card>
+          <Box sx={{ width: '100%' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={value} onChange={handleTabsChange} aria-label="basic tabs example">
+                <Tab label="Vendas de Produtos" />
+                <Tab label="Compras de Produtos" />
+              </Tabs>
+            </Box>
+            <TabPanel value={value} index={0}>
+              <div>
+                <div className="row">
+                  <div className="col-md-12 p-3">
+                    <button className="btn btn-primary" onClick={handleClickOpen}> Registrar Venda</button>
+                  </div>
+                </div>
 
-      <div className="row">
-        <div className="col-md-12 p-3">
-          <button className="btn btn-primary" onClick={handleClickOpen}> Registrar Venda</button>
-        </div>
+                <MUIDataTable
+                  title={"Vendas"}
+                  data={vendas}
+                  columns={column}
+                  options={options}
+                />
+
+                <Dialog open={openModalAddVenda} onClose={handleClose} fullWidth={true} maxWidth={"lg"}>
+                  {!isLoading &&
+                    <DialogTitle sx={{ textAlign: "center" }}>Registrar Venda</DialogTitle>
+                  }
+                  <DialogContent>
+                    {isLoading &&
+                      <div className="m-5 p-5">
+                        <Preloader />
+                      </div>
+                    }
+                    {!isLoading &&
+                      <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="row">
+                          <div className="col-12 mb-3">
+                            <input type="hidden" value={userData?.Id} {...register("usuarioId")} />
+                            <label
+                              htmlFor="exampleInputPassword1"
+                              className="form-label"
+                            >Produto
+                            </label>
+                            <Autocomplete
+                              onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
+
+                              }}
+                              disablePortal
+                              id="combo-box-demo"
+                              options={optionsSelect}
+                              renderInput={(params) => <TextField {...params} label="Produto" />}
+
+                            />
+                            {errors.produto && <p className="text-danger">{errors.produto?.message}</p>}
+
+                          </div>
+                        </div>
+                        <div className="row mb-2">
+                          <div className="col-4">
+                            <label htmlFor="datavenda">Data de Venda</label>
+                            <input
+                              {...register("datavenda", { required: { value: true, message: "Campo Necessário!" } })}
+                              type="date" className="form-control" name="datavenda" />
+                          </div>
+                          <div className="col-4">
+                            <label htmlFor="quantidade">Quantidade</label>
+                            <input
+                              {...register("quantidade", { required: { value: true, message: "Campo Necessário!" } })}
+                              type="number" step={1} className="form-control" name="quantidade" />
+                          </div>
+                          <div className="col-4">
+                            <label htmlFor="quantidade">Forma Pagam.</label>
+                            <select
+                              {...register("formaPag", { required: { value: true, message: "Campo Necessário!" } })}
+                            className="form-control"
+
+                            >
+                              <option key={''} value={0}></option>
+                              <option key={1} value={1}>Dinheiro</option>
+                              <option key={2} value={2}>Crédito</option>
+                              <option key={3} value={3}>Débito</option>
+                              <option key={4} value={4}>Cheque</option>
+
+
+                            </select>
+                          </div>
+                        </div>
+                        <div className="row mb-3">
+                          <div className="col 4">
+                            <label htmlFor="precoDisplay">Cliente</label>
+                            <input
+                              {...register("cliente", { required: { value: true, message: "Campo Necessário!" } })}
+                              className="form-control" type="text" />
+                          </div>
+                          <div className="col 4">
+                            <label htmlFor="precoDisplay">Tel. Cliente</label>
+                            <input
+                              {...register("contatoCliente", { required: { value: true, message: "Campo Necessário!" } })}
+                              className="form-control" type="text" />
+                          </div>
+                          <div className="col-4">
+                            <label htmlFor="precoDisplay">Valor Total</label>
+                            <CurrencyInput
+                              id="input-example"
+                              decimalSeparator=","
+                              groupSeparator=""
+                              placeholder="R$ 0.00"
+                              intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                              {...register("precoDisplay", { required: { value: true, message: "Campo Necessário!" } })}
+                              className={`form-control ${errors.precoDisplay?.message != null ? "is-invalid" : ""}`}
+                            >
+                            </CurrencyInput>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-end align-items-end">
+                          <button className="btn btn-danger mx-1" type="button" onClick={ModalAddProdutoCancelar}>Cancelar</button>
+                          <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>
+                        </div>
+                      </form>}
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              Item Two
+            </TabPanel>
+
+          </Box>
+        </Card>
+
       </div>
 
-      <MUIDataTable
-        title={"Vendas"}
-        data={vendas}
-        columns={columns}
-        options={options}
-      />
-
-      <Dialog open={openModalAddVenda} onClose={handleClose} fullWidth={true} maxWidth={"lg"}>
-        {!isLoading &&
-          <DialogTitle sx={{ textAlign: "center" }}>Registrar Venda</DialogTitle>
-        }
-        <DialogContent>
-          {isLoading &&
-            <div className="m-5 p-5">
-              <Preloader />
-            </div>
-          }
-
-          {!isLoading &&
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="row">
-                <div className="col-6 mb-3">
-                  <input type="hidden" value={userData?.Id} {...register("usuarioId")} />
-                  <label
-                    htmlFor="exampleInputPassword1"
-                    className="form-label"
-                  >Produto
-                  </label>
-                  <select
-                    {...register("produto", { required: { value: true, message: "Campo Necessário!" } })}
-                    className={`form-select ${errors.produto?.message != null ? "is-invalid" : ""}`}>
-                    <option key={''} value=''></option>
-                    {produtos?.map((prod) => {
-                      <option key={prod.Id} value={prod.Id}>{prod.descricao} - {prod.tamanho} - {prod.cor} - {prod.genero} </option>
-                    })
-                    }
-                  </select>
-                  {errors.codigo && <p className="text-danger">{errors.codigo.message}</p>}
-                </div>
-              </div>
-            </form>}
-
-
-        </DialogContent>
-      </Dialog>
-
-
-
     </Layout>
-  )
+  );
 
 
 
