@@ -25,7 +25,7 @@ import { ChartType } from "../../models/ChartOptions.model";
 
         },
         xaxis: {
-            categories: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
+            categories: ["Domingo","Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
         },
         dataLabels: {
             enabled: true,
@@ -51,12 +51,7 @@ import { ChartType } from "../../models/ChartOptions.model";
             }
         }
     }],
-    series: [
-        {
-            name: "Lucro",
-            data: [30.15, 47.19, 45.10, 50.25, 49.50, 60.79, 32.01]
-        }
-    ],
+
     type: "bar",
 };
 

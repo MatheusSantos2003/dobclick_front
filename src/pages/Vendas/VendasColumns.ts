@@ -9,7 +9,7 @@ export const VendasColumns = [
         }
     },
     {
-        name: "Produto",
+        name: "produtoDisplay",
         label: "Produto",
         options: {
             filter: true,
@@ -17,7 +17,7 @@ export const VendasColumns = [
         }
     },
     {
-        name: "Quantidade",
+        name: "quantidadeDisplay",
         label: "Quantidade",
         options: {
             filter: true,
@@ -25,7 +25,7 @@ export const VendasColumns = [
         }
     },
     {
-        name: "Cliente",
+        name: "cliente",
         label: "Cliente",
         options: {
             filter: true,
@@ -33,7 +33,7 @@ export const VendasColumns = [
         }
     },
     {
-        name: "DataVenda",
+        name: "dataVendaDisplay",
         label: "Data da Venda",
         options: {
             filter: true,
@@ -41,8 +41,16 @@ export const VendasColumns = [
         }
     },
     {
-        name: "Valor Total",
+        name: "valorTotalDisplay",
         label: "Valor Total",
+        options: {
+            filter: true,
+            sort: true,
+        }
+    },
+    {
+        name: "formaPagamentoDisplay",
+        label: "Forma de Pagto.",
         options: {
             filter: true,
             sort: true,

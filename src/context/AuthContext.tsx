@@ -10,6 +10,7 @@ interface contextInterface {
     user: User | null,
     Login: (user: User) => Promise<ResponseModel<any>>,
     Logout: () => void,
+    defineUser : (user:User) => void,
     isAuthenticated: boolean
 }
 
@@ -49,8 +50,13 @@ export const AuthProvider = (props: any) => {
         setUser(null);
     }
 
+    function defineUser(user:User){
+        localStorage.setItem("AppUsuario", JSON.stringify(user));
+        setUser(user);
+    }
+
     return (
-        <AuthContext.Provider value={{ isAuthenticated: Boolean(user), user, Login, Logout }}>
+        <AuthContext.Provider value={{ isAuthenticated: Boolean(user), user, Login, Logout,defineUser }}>
             {props.children}
         </AuthContext.Provider>
     )

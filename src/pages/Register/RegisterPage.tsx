@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye,faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { AuthContext } from "../../context/AuthContext";
+import User from "../../models/User.model";
 
 
 
@@ -19,6 +21,7 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [showConfirmPassword,setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const context = useContext(AuthContext);
 
   const SubmitRegisterForm = async (values: any) => {
     // alert(values.senha + "  _  "+values.confirmaSenha);
@@ -41,7 +44,7 @@ const RegisterPage = () => {
       return;
     }
 
-    axios.post<ResponseModel<any>>(apiURL + "/usuarios/cadastrar", values).then((res) => {
+    axios.post<ResponseModel<User>>(apiURL + "/usuarios/cadastrar", values).then((res) => {
       if (res.data.success) {
 
 
@@ -58,7 +61,11 @@ const RegisterPage = () => {
           progress: undefined,
         });
         localStorage.setItem('AppUsuario', JSON.stringify(res.data.data));
+        let usuario:User = new User();
+        usuario = res.data.data as User;
+        context.defineUser(usuario);
         navigate("/Home");
+
       } else {
 
         toast.error(res.data.message, {
