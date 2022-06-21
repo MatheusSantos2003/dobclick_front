@@ -16,7 +16,7 @@ const apiURL = import.meta.env.VITE_APIURL;
 
 const RegisterPage = () => {
   const { register, handleSubmit, reset, setError, clearErrors, formState: { errors } } = useForm();
-  const [showPassword, setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword,setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ const RegisterPage = () => {
       return;
     }
 
-    axios.post<ResponseModel<any>>(apiURL + "/usuarios/cadastrar", values).then((res) => {
+    axios.post<ResponseModel<any>>(apiURL + "/usuarios/cadastrar", values).then(async (res) => {
       if (res.data.success) {
 
 
@@ -57,7 +57,7 @@ const RegisterPage = () => {
           draggable: true,
           progress: undefined,
         });
-        localStorage.setItem('AppUsuario', JSON.stringify(res.data.data));
+      await localStorage.setItem('AppUsuario', JSON.stringify(res.data.data));
         navigate("/Home");
       } else {
 
