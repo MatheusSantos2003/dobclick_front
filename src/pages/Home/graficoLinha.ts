@@ -19,7 +19,7 @@ const GraficoLinha: ChartType = {
             },
         },
         xaxis: {
-            categories: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
+            categories: ['Dom','Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
           },
     },
     type: "line",

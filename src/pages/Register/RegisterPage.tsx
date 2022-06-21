@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye,faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { AuthContext } from "../../context/AuthContext";
+import User from "../../models/User.model";
 
 
 
@@ -19,6 +21,7 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword,setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const context = useContext(AuthContext);
 
   const SubmitRegisterForm = async (values: any) => {
     // alert(values.senha + "  _  "+values.confirmaSenha);
@@ -59,6 +62,7 @@ const RegisterPage = () => {
         });
       await localStorage.setItem('AppUsuario', JSON.stringify(res.data.data));
         navigate("/Home");
+
       } else {
 
         toast.error(res.data.message, {

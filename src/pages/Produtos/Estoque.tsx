@@ -830,21 +830,10 @@ const EstoquePage = () => {
                 <button className="btn btn-success mx-1" placeholder="" type="submit"> Criar Produto </button>
               </div>
             </form>}
-
-
         </DialogContent>
       </Dialog>
-
-
-
     </Layout>
   )
-
-
-}
-
-const Formatter = () => {
-
 }
 
 export default EstoquePage;
