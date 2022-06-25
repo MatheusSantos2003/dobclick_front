@@ -19,6 +19,8 @@ import axios from "axios";
 import CurrencyInput from "react-currency-input-field";
 import CurrencyService from "../../services/CurrencyService";
 import { toast, ToastContainer } from "react-toastify";
+import Compra from "../../models/Compra.model";
+import { ComprasColumns } from "./ComprasColumns";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -30,14 +32,16 @@ const Vendas = () => {
 
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [openModalAddVenda, setopenModalAddVenda] = useState(false);
+  const [openModalAddCompras, setOpenModalAddCompras] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [vendas, setVenda] = useState<Venda[]>([]);
+  const [compras, setCompras] = useState<Compra[]>([]);
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [value, setValue] = useState(0);
 
   const [totalBrutoValue, setTotalBruto] = useState<number>(0);
   const [quantidadeSelect, SetQuantidade] = useState<number>(0);
-  const [ProdutoSelect,setProdutoSelect] = useState<Produto>(new Produto());
+  const [ProdutoSelect, setProdutoSelect] = useState<Produto>(new Produto());
   const _currencyService = new CurrencyService();
 
   const handleTabsChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -48,6 +52,7 @@ const Vendas = () => {
   let userData: User | null = new User();
 
   var column = VendasColumns;
+  var comprasColumn = ComprasColumns;
 
   const context = useContext(AuthContext);
 
@@ -56,10 +61,20 @@ const Vendas = () => {
     setopenModalAddVenda(!openModalAddVenda);
   };
 
+  const handlClickCompraOpen = () => {
+
+    setOpenModalAddCompras(!openModalAddCompras);
+  }
+
   const ModalAddProdutoCancelar = () => {
     setTotalBruto(0);
     reset();
     setopenModalAddVenda(false);
+  }
+
+  const ModalAddCompraCancelar = () => {
+    reset();
+    setOpenModalAddCompras(false);
   }
 
   useEffect(() => {
@@ -68,7 +83,7 @@ const Vendas = () => {
     setIsPageLoading(true);
     getProdutos();
     listarVendas();
-  
+    listarCompras();
 
 
 
@@ -76,30 +91,60 @@ const Vendas = () => {
 
 
 
-  async function listarVendas(){
+  async function listarVendas() {
     if (userData?.Id == undefined) {
       userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
       listarVendas();
       return;
-    } else{
+    } else {
       await axios.post<ResponseModel<Venda[]>>(apiURL + "/vendas/listar", { "id": userData?.Id })
-      .then((response) => {
-        var novalista: Venda[] = [];
-        response.data.data?.map((prod) => {
-          prod.formaPagamentoDisplay = FormaPagamentoEnum[prod.formaPagamento];
-          novalista.push(prod);
-        })
-        setisLoading(false);
-        setIsPageLoading(false);
-        setVenda(novalista);
-        console.log(novalista);
-        reset();
-      }).catch((error) => {
-        console.log(error);
-        setisLoading(false);
-        setIsPageLoading(false);
-      });
+        .then((response) => {
+          var novalista: Venda[] = [];
+          response.data.data?.map((prod) => {
+            prod.formaPagamentoDisplay = FormaPagamentoEnum[prod.formaPagamento];
+            novalista.push(prod);
+          })
+          setisLoading(false);
+          setIsPageLoading(false);
+          setVenda(novalista);
+
+          reset();
+        }).catch((error) => {
+          console.log(error);
+          setisLoading(false);
+          setIsPageLoading(false);
+        });
     }
+  }
+
+  async function listarCompras() {
+
+    if (userData?.Id == undefined) {
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+      listarCompras()
+      return;
+    } else {
+      await axios.post<ResponseModel<Venda[]>>(apiURL + "/compras/listar", { "usuarioId": userData?.Id })
+        .then((response) => {
+          var novalista: Compra[] = [];
+          response.data.data?.map((Compra) => {
+            Compra.formaPagamentoDisplay = FormaPagamentoEnum[Compra.formaPagamento];
+            novalista.push(Compra);
+          })
+          setisLoading(false);
+          setIsPageLoading(false);
+          setCompras(novalista);
+          console.log(novalista);
+
+          reset();
+        }).catch((error) => {
+          console.log(error);
+          setisLoading(false);
+          setIsPageLoading(false);
+        });
+    }
+
+
   }
 
   const handleProductChange = (prod: Produto) => {
@@ -136,12 +181,12 @@ const Vendas = () => {
 
 
 
-  const onSubmit = async(values: any) => {
-   setIsPageLoading(true);
-   setisLoading(false);
+  const onSubmit = async (values: any) => {
+    setIsPageLoading(true);
+    setisLoading(false);
 
-  
-    if(userData?.Id == null){
+
+    if (userData?.Id == null) {
       userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
     }
     values.produtoId = ProdutoSelect.Id as number;
@@ -149,11 +194,11 @@ const Vendas = () => {
     values.valorTotal = _currencyService.Formatar(values?.valorTotalDisplay as string);
 
 
-    await  axios.post<ResponseModel<Venda>>(apiURL+'/vendas/cadastrar',{data: values}).then((response)=>{
+    await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar', { data: values }).then((response) => {
 
       setisLoading(false);
-     
-      if(response.data.success){
+
+      if (response.data.success) {
         toast.success(response.data.message ? response.data.message : "Sucesso!", {
           type: "success",
           theme: "colored",
@@ -170,7 +215,7 @@ const Vendas = () => {
         setisLoading(false);
         setopenModalAddVenda(false)
       }
-    
+
     });
   }
 
@@ -263,6 +308,54 @@ const Vendas = () => {
     }
   };
 
+  const optionsCompra: MUIDataTableOptions = {
+    filterType: 'checkbox',
+    onRowClick: ((rowdata, rowmeta) => {
+
+    }),
+    onRowsDelete: ((rowsDeleted, newTableData) => {
+
+    }),
+    rowsSelected: idsSelecionados,
+    print: false,
+    download: false,
+    textLabels: {
+      body: {
+        noMatch: "Desculpe, Nenhum Dado foi encontrado!",
+        toolTip: "Filtrar",
+        columnHeaderTooltip: column => `Ordenar por ${column.label}`
+      },
+      pagination: {
+        next: "Próxima Pagina",
+        previous: "Pagina Anterior",
+        rowsPerPage: "Linhas por pagina:",
+        displayRows: "De",
+      },
+      toolbar: {
+        search: "Pesquisar",
+        downloadCsv: "Download do CSV",
+        print: "Imprimir",
+        viewColumns: "Ver Colunas",
+        filterTable: "Filtrar Tabela",
+      },
+      filter: {
+        all: "TUDO",
+        title: "FILTROS",
+        reset: "REINICIAR",
+      },
+      viewColumns: {
+        title: "Mostrar Colunas",
+        titleAria: "Mostrar/Esconder Colunas da Tabela",
+      },
+      selectedRows: {
+        text: "Coluna(s) selecionada(s)",
+        delete: "Deletar",
+        deleteAria: "Deletar linhas selecionadas",
+      },
+    }
+  };
+
+
   function exlcuirVenda(listaIds: number[]) {
     setIsPageLoading(true);
     if (listaIds.length == 1) {
@@ -273,29 +366,29 @@ const Vendas = () => {
     }
   }
 
-  function excluirUnicaVenda(id:number){
+  function excluirUnicaVenda(id: number) {
 
   }
 
-  function exlcuirListasVendas(listaids:number[]){
-    
+  function exlcuirListasVendas(listaids: number[]) {
+
   }
 
 
   return (
     <Layout>
       <div className="">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
         <Card>
           <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -333,7 +426,7 @@ const Vendas = () => {
                             var produto = value as Produto;
                             handleProductChange(produto);
                           }}
-                          
+
                           value={ProdutoSelect}
                           disablePortal
                           id="combo-box-demo"
@@ -356,7 +449,7 @@ const Vendas = () => {
                         <label htmlFor="quantidade">Quantidade</label>
                         <input
                           {...register("quantidade", { required: { value: true, message: "Campo Necessário!" } })}
-                      
+
                           type="number" step={1} min={0} className="form-control" name="quantidade" />
                       </div>
                       <div className="col-4">
@@ -404,21 +497,6 @@ const Vendas = () => {
                       </div>
 
                     </div>
-                    {/* <div className="col-4">
-                      <label htmlFor="precoDisplay">Valor Bruto do Produto</label>
-                      <CurrencyInput
-                        id="input-example"
-                        decimalSeparator=","
-                        groupSeparator=""
-                        placeholder="R$ 0.00"
-                        value={totalBrutoValue}
-                        disabled={true}
-                        intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-
-                        className={"form-control"}
-                      >
-                      </CurrencyInput>
-                    </div> */}
                     <div className="d-flex justify-content-end align-items-end">
                       <button className="btn btn-danger mx-1" type="button" onClick={ModalAddProdutoCancelar}>Cancelar</button>
                       <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>
@@ -436,7 +514,90 @@ const Vendas = () => {
 
             </TabPanel>
             <TabPanel value={value} index={1}>
-              Item Two
+              <div>
+                <div className="row">
+                  <div className="col-md-12 p-3">
+                    {!openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Registrar Compra</button>}
+                    {openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Fechar</button>}
+                  </div>
+                </div>
+
+                {!isLoading && openModalAddCompras &&
+                  <form onSubmit={handleSubmit(onSubmit)} className="my-4 p-4 border border-2">
+
+                    <div className="row">
+                      <div className="col-12 mb-3">
+                        <input type="hidden" value={userData?.Id} {...register("usuarioId")} />
+                        <label
+                          htmlFor="exampleInputPassword1"
+                          className="form-label"
+                        >Produto
+                        </label>
+                        <Autocomplete
+                          onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
+                            var produto = value as Produto;
+                            handleProductChange(produto);
+                          }}
+                          disablePortal
+                          value={ProdutoSelect}
+                          id="combo-box-demo"
+                          options={optionsSelect}
+                          renderInput={(params) => <TextField {...params} required={true} label="Produto" />}
+
+                        />
+                      </div>
+                    </div>
+
+                    <div className="row mb-2">
+                      <div className="col-4">
+                        <label htmlFor="datavenda">Data de Venda</label>
+                        <input
+                          {...register("datavenda", { required: { value: true, message: "Campo Necessário!" } })}
+                          type="date" className="form-control" name="datavenda" />
+                      </div>
+                      <div className="col-4">
+                        <label htmlFor="quantidade">Quantidade</label>
+                        <input
+                          {...register("quantidade", { required: { value: true, message: "Campo Necessário!" } })}
+
+                          type="number" step={1} min={0} className="form-control" name="quantidade" />
+                      </div>
+                      <div className="col-4">
+                        <label htmlFor="quantidade">Forma Pagam.</label>
+                        <select
+                          {...register("formaPag", { required: { value: true, message: "Campo Necessário!" } })}
+                          className="form-control"
+
+                        >
+                          <option key={''} value={''}></option>
+                          <option key={1} value={0}>Dinheiro</option>
+                          <option key={2} value={1}>Crédito</option>
+                          <option key={3} value={2}>Débito</option>
+                          <option key={4} value={3}>Cheque</option>
+
+
+                        </select>
+                      </div>
+                    </div>
+
+
+
+                    <div className="d-flex justify-content-end align-items-end">
+                      <button className="btn btn-danger mx-1" type="button" onClick={ModalAddCompraCancelar}>Cancelar</button>
+                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>
+                    </div>
+                  </form>}
+
+
+
+                <MUIDataTable
+                  title={"Compras"}
+                  data={compras}
+                  columns={comprasColumn}
+                  options={optionsCompra}
+                />
+              </div>
+
             </TabPanel>
 
           </Box>

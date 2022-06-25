@@ -15,9 +15,12 @@ import CircularProgress, {
     CircularProgressProps,
 } from '@mui/material/CircularProgress';
 import { AuthContext } from "../../context/AuthContext";
+import axios from "axios";
+import { ResponseModel } from "../../models/Response.model";
+import { Produto } from "../../models/Produto.model";
 
 
-
+const apiURL = import.meta.env.VITE_APIURL;
 
 
 function CircularProgressEstoqueCriticoVermelho(props: CircularProgressProps) {
@@ -93,9 +96,13 @@ function CircularProgressEstoqueCriticoAmarelo(props: CircularProgressProps) {
 function Home() {
     let userData: User = new User();
     const [usuarioName, setUsuarioName] = useState<string | undefined>("");
+    const [usuario, setUsuario] = useState<User | null>(null);
     const [isGraphsLoading, setIsGraphsLoading] = useState<boolean>(true);
+    const [produtoCritico, setProdutoCritico] = useState<Produto | null>(null);
+    const [produtoAtencao,setProdutoAtencao] = useState<Produto | null>(null);
     const navigate = useNavigate();
     const context = useContext(AuthContext);
+    var numeroTentativa = 0;
 
 
 
@@ -105,6 +112,7 @@ function Home() {
         } else if (context?.user == null) {
             var usu = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
 
+            setUsuario(usu);
             setUsuarioName(usu.nome);
 
         } else {
@@ -112,50 +120,80 @@ function Home() {
         }
 
         //pega os dados do back
-        const dataGraficoSemana = [30.15, 47.19, 45.10, 50.25, 49.50, 60.79, 32.01];
-        const dataGraficoLinha = {
-            name: "Camisa Polo GG",
-            data: [10, 15, 12, 25, 50]
+        getGraficosData();
 
+        // setTimeout(function () {
+        //     //your code to be executed after 1 second
+        //     setIsGraphsLoading(false);
+        // }, 1500);
+
+
+
+    },[]);
+
+    async function getGraficosData() {
+
+        if (usuario?.Id == null) {
+            var usu = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+
+            setUsuario(usu);
+         
+            if (numeroTentativa == 0) {
+                numeroTentativa++;
+                await axios.post<ResponseModel<any>>(apiURL + "/graficos/obterDadosGraficos", {
+                    "usuarioId": usu.Id
+                }).then((response) => {
+      
+                    const dataGraficoSemana = response.data.data.GraficoSemana;
+                    GraficoSemanaOptions.series = [{
+                        name: "Lucro",
+                        data: dataGraficoSemana
+                    }];
+                    const dataGraficoLinha = response.data.data.MaisVendidoSemana;
+                    GraficoLinha.series = [{
+                        name: dataGraficoLinha.name,
+                        data: dataGraficoLinha.data
+                    }]
+
+
+                    setProdutoCritico(response.data.data.EstoqueCritico);
+                    setProdutoAtencao(response.data.data.EstoqueAtencao);
+
+                    setIsGraphsLoading(false);
+                });
+            }
+
+        } else {
+            if (numeroTentativa == 0) {
+                numeroTentativa++;
+                await axios.post<ResponseModel<any>>(apiURL + "/graficos/obterDadosGraficos", {
+                    "usuarioId": usuario?.Id
+                }).then((response) => {
+      
+                    const dataGraficoSemana = response.data.data.GraficoSemana;
+                    GraficoSemanaOptions.series = [{
+                        name: "Lucro",
+                        data: dataGraficoSemana
+                    }];
+                    const dataGraficoLinha = response.data.data.MaisVendidoSemana;
+                    GraficoLinha.series = [{
+                        name: dataGraficoLinha.name,
+                        data: dataGraficoLinha.data
+                    }]
+
+
+                    setProdutoCritico(response.data.data.EstoqueCritico);
+                    setProdutoAtencao(response.data.data.EstoqueAtencao);
+
+                    setIsGraphsLoading(false);
+                });
+            }
         }
-
-        //  series: [{
-        //     name: "Camisa Polo GG",
-        //     data: [10,15,12,25,50]
-        // }]
-
-        // series: [
-        //     {
-        //         name: "Lucro",
-        //         data: [30.15, 47.19, 45.10, 50.25, 49.50, 60.79, 32.01]
-        //     }
-        // ],
-
-        GraficoSemanaOptions.series = [{
-            name: "Lucro",
-            data: dataGraficoSemana
-        }];
-
-
-        GraficoLinha.series = [{
-            name: dataGraficoLinha.name,
-            data: dataGraficoLinha.data
-        }]
-
-
-        setTimeout(function () {
-            //your code to be executed after 1 second
-            setIsGraphsLoading(false);
-        }, 1500);
+    }
 
 
 
-    });
     return (
-
-
-
-
         <Layout>
 
             <h2>Home</h2>
@@ -211,19 +249,14 @@ function Home() {
                                         }}
                                     >
                                         <div className="row">
-                                            <div className="col-12 text-center" >
+                                            <div className="col-12 text-center">
                                                 <strong>
-                                                    15% Restando
+                                                    {produtoCritico?.descricao}
                                                 </strong>
                                             </div>
                                             <div className="col-12 text-center">
                                                 <strong>
-                                                    Camisa Polo GG
-                                                </strong>
-                                            </div>
-                                            <div className="col-12 text-center">
-                                                <strong>
-                                                    10 UN
+                                                {produtoCritico?.estoque} UN
                                                 </strong>
                                             </div>
                                         </div>
@@ -287,19 +320,14 @@ function Home() {
                                         }}
                                     >
                                         <div className="row">
-                                            <div className="col-12 text-center" >
+                                            <div className="col-12 text-center">
                                                 <strong>
-                                                    45% Restando
+                                                  {produtoAtencao?.descricao}
                                                 </strong>
                                             </div>
                                             <div className="col-12 text-center">
                                                 <strong>
-                                                    JAQUETA JEANS
-                                                </strong>
-                                            </div>
-                                            <div className="col-12 text-center">
-                                                <strong>
-                                                    47 UN
+                                                {produtoAtencao?.estoque} UN
                                                 </strong>
                                             </div>
                                         </div>
