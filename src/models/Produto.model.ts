@@ -7,9 +7,11 @@ export class Produto {
     marca?: string;
     cor?: string;
     estoque?: number;
+    estoqueTotal?:number;
     fornecedorId?:number;
     usuarioId?: number;
     precoDisplay?: string;
+    porcentagem!:number;
     preco?: number;
     label?: string = "";
 

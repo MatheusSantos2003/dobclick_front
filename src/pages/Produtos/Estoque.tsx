@@ -86,7 +86,15 @@ const EstoquePage = () => {
     },
     {
       name: "estoque",
-      label: "Estoque",
+      label: "Estoque Atual",
+      options: {
+        filter: false,
+        sort: false,
+      }
+    },
+    {
+      name: "estoqueTotal",
+      label: "Estoque Total",
       options: {
         filter: false,
         sort: false,
@@ -474,18 +482,19 @@ const EstoquePage = () => {
   }, [ProdutoEditing])
 
 
-  const CustomChip = ({  }) => {
+  const CustomChip = ({ }) => {
     return (
-        <Chip
-            variant="outlined"
-            color="secondary"
-      
-        />
+      <Chip
+        variant="outlined"
+        color="secondary"
+
+      />
     );
-};
+  };
 
   return (
     <Layout>
+
       {isPageLoading && <Preloader />}
       <h2> Produto </h2>
       <ToastContainer
@@ -613,11 +622,11 @@ const EstoquePage = () => {
 
                 </div>
                 <div className="row">
-                  <div className="col-2 mb-3">
+                  <div className="col-4 mb-3">
                     <label
                       htmlFor="exampleInputEmail1"
                       className="form-label">
-                      Estoque
+                      Estoque Atual
                     </label>
                     <input
                       {...register("estoque", { required: { value: true, message: "Campo Necessário!" } })}
@@ -627,7 +636,21 @@ const EstoquePage = () => {
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp" />
                   </div>
-                  <div className="col-2 mb-3">
+                  <div className="col-4 mb-3">
+                    <label
+                      htmlFor="exampleInputEmail1"
+                      className="form-label">
+                      Estoque total
+                    </label>
+                    <input
+                      {...register("estoqueTotal", { required: { value: true, message: "Campo Necessário!" } })}
+                      type="number"
+                      defaultValue={ProdutoEditing?.estoqueTotal}
+                      className={`form-control ${errors.estoque?.message != null ? "is-invalid" : ""}`}
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp" />
+                  </div>
+                  <div className="col-4 mb-3">
                     <label
                       htmlFor="exampleInputEmail1"
                       className="form-label">
@@ -644,19 +667,6 @@ const EstoquePage = () => {
                       className={`form-control ${errors.precoDisplay?.message != null ? "is-invalid" : ""}`}
                     >
                     </CurrencyInput>
-                  </div>
-
-                  <div className="col-6 mb-3">
-                    <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
-                    <select
-                      {...register("fornecedorId", { required: { value: true, message: "Campo Necessário!" } })}
-                      className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}
-                      defaultValue={ProdutoEditing?.fornecedorId}>
-                      <option key={''} value=''></option>
-                      <option key={1} value={1}>Fornecedor 1</option>
-                      <option key={2} value={2}>Fornecedor 2</option>
-                      <option key={3} value={3}>Fornecedor 3</option>
-                    </select>
                   </div>
                 </div>
                 <div className="d-flex justify-content-end align-items-end">
@@ -782,11 +792,25 @@ const EstoquePage = () => {
                 </div>
               </div>
               <div className="row">
-                <div className="col-2 mb-3">
+              <div className="col-4 mb-3">
                   <label
                     htmlFor="exampleInputEmail1"
                     className="form-label">
-                    Estoque
+                    Estoque Total
+                  </label>
+
+                  <input
+                    {...register("estoqueTotal", { required: { value: true, message: "Campo Necessário!" } })}
+                    type="number"
+                    className={`form-control ${errors.estoque?.message != null ? "is-invalid" : ""}`}
+                    id="exampleInputEmail1"
+                    aria-describedby="emailHelp" />
+                </div>
+                <div className="col-4 mb-3">
+                  <label
+                    htmlFor="exampleInputEmail1"
+                    className="form-label">
+                    Estoque Atual
                   </label>
                   <input
                     {...register("estoque", { required: { value: true, message: "Campo Necessário!" } })}
@@ -795,7 +819,8 @@ const EstoquePage = () => {
                     id="exampleInputEmail1"
                     aria-describedby="emailHelp" />
                 </div>
-                <div className="col-3 mb-3">
+         
+                <div className="col-4 mb-3">
                   <label
                     htmlFor="exampleInputEmail1"
                     className="form-label">
@@ -813,17 +838,7 @@ const EstoquePage = () => {
                   >
                   </CurrencyInput>
                 </div>
-                <div className="col-7 mb-3">
-                  <label htmlFor="exampleInputEmail1" className="form-label">Fornecedor</label>
-                  <select
-                    {...register("fornecedorId", { required: { value: true, message: "Campo Necessário!" } })}
-                    className={`form-select ${errors.fornecedor?.message != null ? "is-invalid" : ""}`}>
-                    <option key={''} value=''></option>
-                    <option key={1} value={1}>Fornecedor 1</option>
-                    <option key={2} value={2}>Fornecedor 2</option>
-                    <option key={3} value={3}>Fornecedor 3</option>
-                  </select>
-                </div>
+
               </div>
               <div className="d-flex justify-content-end align-items-end">
                 <button className="btn btn-danger mx-1" type="button" onClick={ModalAddProdutoCancelar}>Cancelar</button>

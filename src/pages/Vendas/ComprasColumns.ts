@@ -41,7 +41,7 @@ export const ComprasColumns = [
         }
     },
     {
-        name: "valorTotalDisplay",
+        name: "valorCompraDisplay",
         label: "Valor Total",
         options: {
             filter: true,

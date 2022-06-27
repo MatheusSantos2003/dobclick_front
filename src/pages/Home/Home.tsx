@@ -235,7 +235,7 @@ function Home() {
                             </div>
                             {!isGraphsLoading && <CardContent className="d-flex justify-content-center align-items-center">
                                 <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                                    <CircularProgressEstoqueCriticoVermelho variant="determinate" size={"20rem"} value={15} />
+                                    <CircularProgressEstoqueCriticoVermelho variant="determinate" size={"20rem"} value={produtoCritico?.porcentagem} />
                                     <Box
                                         sx={{
                                             top: 0,
@@ -257,6 +257,11 @@ function Home() {
                                             <div className="col-12 text-center">
                                                 <strong>
                                                 {produtoCritico?.estoque} UN
+                                                </strong>
+                                            </div>
+                                            <div className="col-12 text-center">
+                                                <strong>
+                                                {produtoCritico?.porcentagem} % do estoque
                                                 </strong>
                                             </div>
                                         </div>
@@ -306,7 +311,7 @@ function Home() {
                             </div>
                             {!isGraphsLoading && <CardContent className="d-flex justify-content-center align-items-center">
                                 <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                                    <CircularProgressEstoqueCriticoAmarelo variant="determinate" size={"20rem"} value={45} />
+                                    <CircularProgressEstoqueCriticoAmarelo variant="determinate" size={"20rem"} value={produtoAtencao?.porcentagem} />
                                     <Box
                                         sx={{
                                             top: 0,
@@ -328,6 +333,11 @@ function Home() {
                                             <div className="col-12 text-center">
                                                 <strong>
                                                 {produtoAtencao?.estoque} UN
+                                                </strong>
+                                            </div>
+                                            <div className="col-12 text-center">
+                                                <strong>
+                                                {produtoAtencao?.porcentagem} % do estoque
                                                 </strong>
                                             </div>
                                         </div>

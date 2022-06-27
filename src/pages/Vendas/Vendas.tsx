@@ -212,12 +212,86 @@ const Vendas = () => {
         });
         listarVendas();
         reset();
+        setProdutoSelect(new Produto());
+        setisLoading(false);
+        setopenModalAddVenda(false)
+      }else{
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarVendas();
+        reset();
+        setProdutoSelect(new Produto());
         setisLoading(false);
         setopenModalAddVenda(false)
       }
 
     });
   }
+
+  const onSubmitCompra = async (values: any) => {
+    setIsPageLoading(true);
+    setisLoading(true);
+
+    if (userData?.Id == null) {
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+    }
+    values.produtoId = ProdutoSelect.Id as number;
+    values.usuarioId = userData?.Id as number;
+    values.valorCompra = _currencyService.Formatar(values?.valorCompraDisplay as string);
+
+    await axios.post<ResponseModel<any>>(apiURL + '/compras/cadastrar', {
+      data: values
+    }).then((response) => {
+
+      if (response.data.success) {
+        toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          type: "success",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        reset();
+        setProdutoSelect(new Produto());
+        setisLoading(false);
+        setOpenModalAddCompras(false)
+      } else{
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        reset();
+        setProdutoSelect(new Produto());
+        setisLoading(false);
+        setOpenModalAddCompras(false)
+      }
+
+    });
+
+
+  };
 
   const optionsSelect = produtos.map(function (prod: Produto) {
     prod.label = prod.codigo + " - " + prod.descricao + " - " + prod.cor + " - " + prod.genero + " - " + prod.marca;
@@ -314,7 +388,20 @@ const Vendas = () => {
 
     }),
     onRowsDelete: ((rowsDeleted, newTableData) => {
+      var listaIndices: number[] = [];
 
+      rowsDeleted.data.map((values) => {
+        listaIndices.push(values.index);
+      });
+
+      var listaIds: any[] = [];
+
+      listaIndices.map((indice) => {
+        listaIds?.push(compras[indice].Id);
+      });
+
+
+      exlcuirCompras(listaIds);
     }),
     rowsSelected: idsSelecionados,
     print: false,
@@ -355,6 +442,102 @@ const Vendas = () => {
     }
   };
 
+  function exlcuirCompras(listaIds:number[]){
+    setIsPageLoading(true);
+    if(listaIds.length == 1){
+      excluirUnicaCompra(listaIds[0]);
+    }else{
+      excluirListasCompras(listaIds);
+    }
+  }
+
+  function excluirUnicaCompra(id:number){
+
+    axios.delete<ResponseModel<any>>(apiURL + '/compras/delete', {
+      data: { "id": id }
+    }).then((response)=>{
+      
+      if(response.data.success){
+        toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          type: "success",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        setIsPageLoading(false);
+      } else{
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        setIsPageLoading(false);
+      }
+
+    }).catch((error) => {
+      console.log(error);
+      setIsPageLoading(false);
+    });
+
+  }
+
+
+  function excluirListasCompras(listaids: number[]){
+
+    axios.delete<ResponseModel<any>>(apiURL + '/compras/deleteporLista', {
+      data: { "listaids": listaids }
+    }).then((response)=>{
+      
+      if(response.data.success){
+        toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          type: "success",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        setIsPageLoading(false);
+      } else{
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        setIsPageLoading(false);
+      }
+
+    }).catch((error) => {
+      console.log(error);
+      setIsPageLoading(false);
+    });
+
+  }
+
 
   function exlcuirVenda(listaIds: number[]) {
     setIsPageLoading(true);
@@ -367,10 +550,88 @@ const Vendas = () => {
   }
 
   function excluirUnicaVenda(id: number) {
+    setIsPageLoading(true);
+    
+    axios.delete<ResponseModel<any>>(apiURL + '/vendas/delete', {
+      data: { "id": id }
+    }).then((response)=>{
+      
+      if(response.data.success){
+        toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          type: "success",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarVendas();
+        setIsPageLoading(false);
+      } else{
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarVendas();
+        setIsPageLoading(false);
+      }
+
+    }).catch((error) => {
+      console.log(error);
+      setIsPageLoading(false);
+    });
 
   }
 
   function exlcuirListasVendas(listaids: number[]) {
+
+    setisLoading(true);
+
+    axios.delete<ResponseModel<any>>(apiURL + '/vendas/deleteporLista', {
+      data: { "listaids": listaids }
+    }).then((response)=>{
+
+      if(response.data.success){
+        toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          type: "success",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarVendas();
+        setIsPageLoading(false);
+      } else{
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarVendas();
+        setIsPageLoading(false);
+      }
+
+    });
 
   }
 
@@ -523,7 +784,7 @@ const Vendas = () => {
                 </div>
 
                 {!isLoading && openModalAddCompras &&
-                  <form onSubmit={handleSubmit(onSubmit)} className="my-4 p-4 border border-2">
+                  <form onSubmit={handleSubmit(onSubmitCompra)} className="my-4 p-4 border border-2">
 
                     <div className="row">
                       <div className="col-12 mb-3">
@@ -550,10 +811,10 @@ const Vendas = () => {
 
                     <div className="row mb-2">
                       <div className="col-4">
-                        <label htmlFor="datavenda">Data de Venda</label>
+                        <label htmlFor="dataCompra">Data da Compra</label>
                         <input
-                          {...register("datavenda", { required: { value: true, message: "Campo Necessário!" } })}
-                          type="date" className="form-control" name="datavenda" />
+                          {...register("dataCompra", { required: { value: true, message: "Campo Necessário!" } })}
+                          type="date" className="form-control" name="dataCompra" />
                       </div>
                       <div className="col-4">
                         <label htmlFor="quantidade">Quantidade</label>
@@ -565,7 +826,7 @@ const Vendas = () => {
                       <div className="col-4">
                         <label htmlFor="quantidade">Forma Pagam.</label>
                         <select
-                          {...register("formaPag", { required: { value: true, message: "Campo Necessário!" } })}
+                          {...register("formaPagamento", { required: { value: true, message: "Campo Necessário!" } })}
                           className="form-control"
 
                         >
@@ -580,6 +841,34 @@ const Vendas = () => {
                       </div>
                     </div>
 
+                    <div className="row mb-3">
+                      <div className="col 4">
+                        <label htmlFor="cliente">Fornecedor</label>
+                        <input
+                          {...register("fornecedor", { required: { value: true, message: "Campo Necessário!" } })}
+                          className="form-control" type="text" />
+                      </div>
+                      <div className="col 4">
+                        <label htmlFor="contatoCliente">Tel. Fornecedor</label>
+                        <input
+                          {...register("fornecedorContato", { required: { value: true, message: "Campo Necessário!" } })}
+                          className="form-control" type="text" />
+                      </div>
+                      <div className="col-4">
+                        <label htmlFor="valorpago">Valor a ser Pago</label>
+                        <CurrencyInput
+                          id="input-example"
+                          decimalSeparator=","
+                          groupSeparator=""
+                          placeholder="R$ 0.00"
+                          intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                          {...register("valorCompraDisplay", { required: { value: true, message: "Campo Necessário!" } })}
+                          className={`form-control ${errors.precoDisplay?.message != null ? "is-invalid" : ""}`}
+                        >
+                        </CurrencyInput>
+                      </div>
+
+                    </div>
 
 
                     <div className="d-flex justify-content-end align-items-end">
