@@ -57,43 +57,7 @@ const LoginPage = () => {
     });
 
 
-    // axios.post<ResponseModel<any>>(apiURL+"/usuarios/login",values).then((res)=>{
-    //   if(res.data.success){
-    //    let newUser = new User();
-    //     var token: any = JSON.parse(localStorage.getItem("userToken") || 'null');
-    //     if (token != null) {
-    //       newUser  = jwtDecode(token);
-    //       context?.setUser(newUser);
-    //     }
 
-
-    //     toast.success(res.data.message ? res.data.message : "Sucesso!", {
-    //       type: "success",
-    //       theme: "colored",
-    //       position: "top-right",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //     localStorage.setItem('userToken', JSON.stringify(res.data.data));
-    //    navigate("/Home");
-    //   }else{
-    //     toast.error(res.data.message ? res.data.message : "Sucesso!", {
-    //       type: "error",
-    //       theme: "colored",
-    //       position: "top-right",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //   }
-    // })
 
   }
 
@@ -105,6 +69,10 @@ const LoginPage = () => {
 
   const handleRegister = () => {
     navigate("/cadastro");
+  }
+
+  const handleForgotPassword = () => {
+    navigate("/esqueceuSenha");
   }
 
   return (
@@ -182,6 +150,13 @@ const LoginPage = () => {
                       <button type="button" onClick={handleShowPassword} className="btn btn-primary showPasswordBtnLogin">{showPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}</button>
                     </div>
                   </div>
+
+                  <div onClick={handleForgotPassword} className="pt-4 d-flex justify-content-center mouseclick">
+                    <span>
+                        Esqueceu a senha?
+                    </span>
+                  </div>
+
                   <div className="pt-4 d-flex justify-content-center">
                     <button
                       className="btn btn-lg custom-login-btn"
