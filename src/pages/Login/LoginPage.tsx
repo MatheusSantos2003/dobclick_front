@@ -151,8 +151,8 @@ const LoginPage = () => {
                     </div>
                   </div>
 
-                  <div onClick={handleForgotPassword} className="pt-4 d-flex justify-content-center mouseclick">
-                    <span>
+                  <div  className="pt-4 d-flex justify-content-center ">
+                    <span className="mouseclick" onClick={handleForgotPassword}>
                         Esqueceu a senha?
                     </span>
                   </div>
