@@ -209,7 +209,7 @@ const EstoquePage = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
 
-  const onSubmit = async (values: Produto) => {
+  const onSubmit = async (values: any) => {
     if (userData?.Id == undefined) {
       userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
     }
@@ -263,7 +263,7 @@ const EstoquePage = () => {
 
   }
 
-  const onSubmitEdit = async (values: Produto) => {
+  const onSubmitEdit = async (values: any) => {
     setisLoading(true);
     if (userData?.Id == undefined) {
       userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
