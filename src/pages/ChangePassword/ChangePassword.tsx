@@ -4,7 +4,7 @@ import { CircularProgress } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { ResponseModel } from "../../models/Response.model";
 
@@ -16,6 +16,7 @@ const ChangePasswordPage = () => {
     const [email, SetEmail] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigate = useNavigate();
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -64,6 +65,10 @@ const ChangePasswordPage = () => {
                         draggable: true,
                         progress: undefined,
                     });
+
+                    setTimeout(() => {
+                        navigate("/");
+                      },2000);
                 }
             })
 

@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { ResponseModel } from "../../models/Response.model";
 
 const ForgotPasswordPage = () => {
     const apiURL = import.meta.env.VITE_APIURL;
     const { register, handleSubmit, formState: { errors } } = useForm();
+    const navigate = useNavigate();
 
     const SubmitForgotPasswordForm = async (values:any) =>{
         
@@ -24,6 +26,9 @@ const ForgotPasswordPage = () => {
                 draggable: true,
                 progress: undefined,
               });
+              setTimeout(() => {
+                navigate("/");
+              },2000);
             }
         })
      
