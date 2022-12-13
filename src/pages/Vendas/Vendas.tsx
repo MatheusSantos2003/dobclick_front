@@ -662,7 +662,7 @@ const Vendas = () => {
               <div>
                 <div className="row">
                   <div className="col-md-12 p-3">
-                    {!openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> da</button>}
+                    {!openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Registrar Venda</button>}
                     {openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Fechar</button>}
                   </div>
                 </div>
