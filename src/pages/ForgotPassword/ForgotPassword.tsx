@@ -78,7 +78,7 @@ const ForgotPasswordPage = () => {
                                             </label>
 
                                             <input
-                                                {...register("email", { required: { value: false, message: "Necessário informar o Email" }, pattern: { value: /[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]+/i, message: "Email Inválido!" } })}
+                                                {...register("email", { required: { value: false, message: "Necessário informar o Email" }})}
                                                 name="email"
                                                 type="email"
                                                 className={`form-control rounded ${errors.email?.message != null ? "is-invalid" : ""}`}

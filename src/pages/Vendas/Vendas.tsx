@@ -662,7 +662,7 @@ const Vendas = () => {
               <div>
                 <div className="row">
                   <div className="col-md-12 p-3">
-                    {!openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Registrar Venda</button>}
+                    {!openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> da</button>}
                     {openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Fechar</button>}
                   </div>
                 </div>
@@ -873,7 +873,7 @@ const Vendas = () => {
 
                     <div className="d-flex justify-content-end align-items-end">
                       <button className="btn btn-danger mx-1" type="button" onClick={ModalAddCompraCancelar}>Cancelar</button>
-                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>
+                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>
                     </div>
                   </form>}
 
