@@ -182,6 +182,13 @@ const LoginPage = () => {
                       <button type="button" onClick={handleShowPassword} className="btn btn-primary showPasswordBtnLogin">{showPassword ? <FontAwesomeIcon icon={faEyeSlash} /> : <FontAwesomeIcon icon={faEye} />}</button>
                     </div>
                   </div>
+
+                    <div className="pt-4 d-flex justify-content-center ">
+                      <span>
+                        Esqueceu a Senha?
+                      </span>
+                    </div>
+
                   <div className="pt-4 d-flex justify-content-center">
                     <button
                       className="btn btn-lg custom-login-btn"
