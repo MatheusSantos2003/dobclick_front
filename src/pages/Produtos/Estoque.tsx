@@ -607,16 +607,13 @@ const EstoquePage = () => {
                       className="form-label">
                       Marca
                     </label>
-                    <select
+                    <input
                       {...register("marca", { required: { value: true, message: "Campo Necessário!" } })}
-                      className={`form-select ${errors.marca?.message != null ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.marca?.message != null ? "is-invalid" : ""}`}
                       defaultValue={ProdutoEditing?.marca}
                     >
-                      <option value=''></option>
-                      <option value="Marca 1">Marca 1</option>
-                      <option value="Marca 3">Marca 3</option>
-                      <option value="Marca 2">Marca 2</option>
-                    </select>
+                
+                    </input>
 
                   </div>
 
@@ -779,15 +776,12 @@ const EstoquePage = () => {
                     className="form-label">
                     Marca
                   </label>
-                  <select
+                  <input
                     {...register("marca", { required: { value: true, message: "Campo Necessário!" } })}
-                    className={`form-select ${errors.marca?.message != null ? "is-invalid" : ""}`}
+                    className={` form-control ${errors.marca?.message != null ? "is-invalid" : ""}`}
                   >
-                    <option value=''></option>
-                    <option value="Marca 1">Marca 1</option>
-                    <option value="Marca 3">Marca 3</option>
-                    <option value="Marca 2">Marca 2</option>
-                  </select>
+           
+                  </input>
 
                 </div>
               </div>
