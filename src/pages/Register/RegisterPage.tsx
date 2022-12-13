@@ -24,20 +24,10 @@ const RegisterPage = () => {
   const context = useContext(AuthContext);
 
   const SubmitRegisterForm = async (values: any) => {
-    // alert(values.senha + "  _  "+values.confirmaSenha);
+
 
     if (values.senha != values.confirmaSenha) {
-      // toast.error("As Senhas São diferentes!", {
-      //   type: "error",
-      //   theme: "colored",
-      //   position: "top-right",
-      //   autoClose: 5000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      // });
+
 
       setError("confirmaSenha", { type: "custom", message: "Senhas Diferentes!" })
 
@@ -60,7 +50,7 @@ const RegisterPage = () => {
           draggable: true,
           progress: undefined,
         });
-      await localStorage.setItem('AppUsuario', JSON.stringify(res.data.data));
+      localStorage.setItem('AppUsuario', JSON.stringify(res.data.data));
         navigate("/Home");
 
       } else {

@@ -57,43 +57,7 @@ const LoginPage = () => {
     });
 
 
-    // axios.post<ResponseModel<any>>(apiURL+"/usuarios/login",values).then((res)=>{
-    //   if(res.data.success){
-    //    let newUser = new User();
-    //     var token: any = JSON.parse(localStorage.getItem("userToken") || 'null');
-    //     if (token != null) {
-    //       newUser  = jwtDecode(token);
-    //       context?.setUser(newUser);
-    //     }
 
-
-    //     toast.success(res.data.message ? res.data.message : "Sucesso!", {
-    //       type: "success",
-    //       theme: "colored",
-    //       position: "top-right",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //     localStorage.setItem('userToken', JSON.stringify(res.data.data));
-    //    navigate("/Home");
-    //   }else{
-    //     toast.error(res.data.message ? res.data.message : "Sucesso!", {
-    //       type: "error",
-    //       theme: "colored",
-    //       position: "top-right",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //   }
-    // })
 
   }
 
@@ -105,6 +69,10 @@ const LoginPage = () => {
 
   const handleRegister = () => {
     navigate("/cadastro");
+  }
+
+  const handleForgotPassword = () => {
+    navigate("/esqueceuSenha");
   }
 
   return (
@@ -149,7 +117,7 @@ const LoginPage = () => {
 
 
                     <input
-                      {...register("email", { required: { value: false, message: "Necessário informar o Email" }, pattern: { value: /[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]+/i, message: "Email Inválido!" } })}
+                      {...register("email", { required: { value: false, message: "Necessário informar o Email" }})}
                       name="email"
                       type="email"
                       className={`form-control rounded ${errors.email?.message != null ? "is-invalid" : ""}`}
@@ -183,11 +151,11 @@ const LoginPage = () => {
                     </div>
                   </div>
 
-                    <div className="pt-4 d-flex justify-content-center ">
-                      <span>
-                        Esqueceu a Senha?
-                      </span>
-                    </div>
+                  <div  className="pt-4 d-flex justify-content-center ">
+                    <span className="mouseclick" onClick={handleForgotPassword}>
+                        Esqueceu a senha?
+                    </span>
+                  </div>
 
                   <div className="pt-4 d-flex justify-content-center">
                     <button

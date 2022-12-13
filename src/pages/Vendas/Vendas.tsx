@@ -873,7 +873,7 @@ const Vendas = () => {
 
                     <div className="d-flex justify-content-end align-items-end">
                       <button className="btn btn-danger mx-1" type="button" onClick={ModalAddCompraCancelar}>Cancelar</button>
-                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>
+                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>
                     </div>
                   </form>}
 
