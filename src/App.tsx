@@ -10,6 +10,7 @@ import LoginPage from './pages/Login/LoginPage';
 import RegisterPage from './pages/Register/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPassword/ForgotPassword';
 import ChangePasswordPage from './pages/ChangePassword/ChangePassword';
+import PersonsPage from './pages/Persons/Persons';
 
 
 
@@ -32,6 +33,7 @@ const App = () => {
             <Route path='/cadastro' element={<RegisterPage />} />
             <Route path='/esqueceuSenha' element={<ForgotPasswordPage />} />
             <Route path='/recuperar-senha/:id' element={<ChangePasswordPage />} />
+            <Route path='/fornecedores-e-clientes' element={<PersonsPage />} />
           </Routes>
       
       </HashRouter>
