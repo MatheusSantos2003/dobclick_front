@@ -3,6 +3,7 @@ export default class Cliente {
     nome: string;
     contato: string;
     usuarioId: number;
+    label: string = "";
 
     constructor(Id:number,nome:string,contato:string,usuarioId:number) {
         this.Id = Id;

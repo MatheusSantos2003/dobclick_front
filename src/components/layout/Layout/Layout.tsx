@@ -203,7 +203,6 @@ const Layout: React.FC = ({ children }) => {
             <ListItem button>
 
               <ListItemText>
-                Fornecedores &
                 Clientes
               </ListItemText>
               <ListItemIcon>

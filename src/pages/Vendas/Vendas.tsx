@@ -6,7 +6,7 @@ import Layout from "../../components/layout/Layout/Layout"
 import Venda, { FormaPagamentoEnum } from "../../models/Venda.model";
 import Preloader from "../../components/preloader/Preloader";
 import User from "../../models/User.model";
-
+import './Vendas.css';
 import { AuthContext } from "../../context/AuthContext";
 import { VendasColumns } from './VendasColumns';
 
@@ -21,6 +21,7 @@ import CurrencyService from "../../services/CurrencyService";
 import { toast, ToastContainer } from "react-toastify";
 import Compra from "../../models/Compra.model";
 import { ComprasColumns } from "./ComprasColumns";
+import Cliente from "../../models/Cliente.model";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -37,11 +38,13 @@ const Vendas = () => {
   const [vendas, setVenda] = useState<Venda[]>([]);
   const [compras, setCompras] = useState<Compra[]>([]);
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [value, setValue] = useState(0);
 
   const [totalBrutoValue, setTotalBruto] = useState<number>(0);
   const [quantidadeSelect, SetQuantidade] = useState<number>(0);
   const [ProdutoSelect, setProdutoSelect] = useState<Produto>(new Produto());
+  const [ClienteSelect, setCliente] = useState<Cliente>();
   const _currencyService = new CurrencyService();
 
   const handleTabsChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -82,6 +85,7 @@ const Vendas = () => {
     setisLoading(true);
     setIsPageLoading(true);
     getProdutos();
+    getClientes();
     listarVendas();
     listarCompras();
 
@@ -107,7 +111,7 @@ const Vendas = () => {
           setisLoading(false);
           setIsPageLoading(false);
           setVenda(novalista);
-
+          console.log(response.data.data)
           reset();
         }).catch((error) => {
           console.log(error);
@@ -134,7 +138,7 @@ const Vendas = () => {
           setisLoading(false);
           setIsPageLoading(false);
           setCompras(novalista);
-          console.log(novalista);
+          // console.log(novalista);
 
           reset();
         }).catch((error) => {
@@ -151,10 +155,14 @@ const Vendas = () => {
     setProdutoSelect(prod);
   }
 
+  const handleClienteChange = (cliente: Cliente) => {
+    setCliente(cliente);
+  }
+
   const getProdutos = async () => {
     var listaProdutos: Produto[] | null = [];
     if (userData?.Id == undefined) {
-
+      
     } else {
       await axios.post<ResponseModel<Produto[]>>(apiURL + "/produtos/listar", { "id": userData?.Id })
         .then((response) => {
@@ -171,6 +179,28 @@ const Vendas = () => {
     }
     setProdutos(listaProdutos);
 
+  }
+
+  const getClientes = async () => {
+    if (userData?.Id == undefined) {
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User; 
+    } else {
+      await axios.get<ResponseModel<any[]>>(apiURL + "/usuarios/listar-clientes/" + userData.Id)
+      .then((response) => {
+          var novalista: any[] = [];
+          response.data.data?.map((prod) => {
+              novalista.push(prod);
+          })
+          setisLoading(false);
+          setIsPageLoading(false);
+          setClientes(novalista);
+          //   handleClose();
+          reset();
+      }).catch((error) => {
+          console.log(error);
+          setisLoading(false);
+      });
+    }
   }
   // useEffect(() => {
   //   if (ProdutoEditing?.Id != 0 && ProdutoEditing?.Id != null) {
@@ -192,9 +222,9 @@ const Vendas = () => {
     values.produtoId = ProdutoSelect.Id as number;
     values.usuarioId = userData?.Id as number;
     values.valorTotal = _currencyService.Formatar(values?.valorTotalDisplay as string);
+    const data = {...values, "cliente": ClienteSelect};
 
-
-    await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar', { data: values }).then((response) => {
+    await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar', { data: data }).then((response) => {
 
       setisLoading(false);
 
@@ -215,7 +245,7 @@ const Vendas = () => {
         setProdutoSelect(new Produto());
         setisLoading(false);
         setopenModalAddVenda(false)
-      }else{
+      } else {
         toast.error(response.data.message, {
           type: "error",
           theme: "colored",
@@ -269,7 +299,7 @@ const Vendas = () => {
         setProdutoSelect(new Produto());
         setisLoading(false);
         setOpenModalAddCompras(false)
-      } else{
+      } else {
         toast.error(response.data.message, {
           type: "error",
           theme: "colored",
@@ -297,6 +327,11 @@ const Vendas = () => {
     prod.label = prod.codigo + " - " + prod.descricao + " - " + prod.cor + " - " + prod.genero + " - " + prod.marca;
     return prod;
 
+  })
+
+  const clientesSelection = clientes.map(function(cliente: Cliente)  {
+    cliente.label = cliente.nome+ " - " + cliente.contato
+    return cliente;
   })
 
   function TabPanel(props: TabPanelProps) {
@@ -442,22 +477,22 @@ const Vendas = () => {
     }
   };
 
-  function exlcuirCompras(listaIds:number[]){
+  function exlcuirCompras(listaIds: number[]) {
     setIsPageLoading(true);
-    if(listaIds.length == 1){
+    if (listaIds.length == 1) {
       excluirUnicaCompra(listaIds[0]);
-    }else{
+    } else {
       excluirListasCompras(listaIds);
     }
   }
 
-  function excluirUnicaCompra(id:number){
+  function excluirUnicaCompra(id: number) {
 
     axios.delete<ResponseModel<any>>(apiURL + '/compras/delete', {
       data: { "id": id }
-    }).then((response)=>{
-      
-      if(response.data.success){
+    }).then((response) => {
+
+      if (response.data.success) {
         toast.success(response.data.message ? response.data.message : "Sucesso!", {
           type: "success",
           theme: "colored",
@@ -471,7 +506,7 @@ const Vendas = () => {
         });
         listarCompras();
         setIsPageLoading(false);
-      } else{
+      } else {
         toast.error(response.data.message, {
           type: "error",
           theme: "colored",
@@ -495,13 +530,13 @@ const Vendas = () => {
   }
 
 
-  function excluirListasCompras(listaids: number[]){
+  function excluirListasCompras(listaids: number[]) {
 
     axios.delete<ResponseModel<any>>(apiURL + '/compras/deleteporLista', {
       data: { "listaids": listaids }
-    }).then((response)=>{
-      
-      if(response.data.success){
+    }).then((response) => {
+
+      if (response.data.success) {
         toast.success(response.data.message ? response.data.message : "Sucesso!", {
           type: "success",
           theme: "colored",
@@ -515,7 +550,7 @@ const Vendas = () => {
         });
         listarCompras();
         setIsPageLoading(false);
-      } else{
+      } else {
         toast.error(response.data.message, {
           type: "error",
           theme: "colored",
@@ -551,12 +586,12 @@ const Vendas = () => {
 
   function excluirUnicaVenda(id: number) {
     setIsPageLoading(true);
-    
+
     axios.delete<ResponseModel<any>>(apiURL + '/vendas/delete', {
       data: { "id": id }
-    }).then((response)=>{
-      
-      if(response.data.success){
+    }).then((response) => {
+
+      if (response.data.success) {
         toast.success(response.data.message ? response.data.message : "Sucesso!", {
           type: "success",
           theme: "colored",
@@ -570,7 +605,7 @@ const Vendas = () => {
         });
         listarVendas();
         setIsPageLoading(false);
-      } else{
+      } else {
         toast.error(response.data.message, {
           type: "error",
           theme: "colored",
@@ -599,9 +634,9 @@ const Vendas = () => {
 
     axios.delete<ResponseModel<any>>(apiURL + '/vendas/deleteporLista', {
       data: { "listaids": listaids }
-    }).then((response)=>{
+    }).then((response) => {
 
-      if(response.data.success){
+      if (response.data.success) {
         toast.success(response.data.message ? response.data.message : "Sucesso!", {
           type: "success",
           theme: "colored",
@@ -615,7 +650,7 @@ const Vendas = () => {
         });
         listarVendas();
         setIsPageLoading(false);
-      } else{
+      } else {
         toast.error(response.data.message, {
           type: "error",
           theme: "colored",
@@ -732,17 +767,27 @@ const Vendas = () => {
                     </div>
                     <div className="row mb-3">
                       <div className="col 4">
-                        <label htmlFor="cliente">Cliente</label>
-                        <input
-                          {...register("cliente", { required: { value: true, message: "Campo Necessário!" } })}
-                          className="form-control" type="text" />
+                      <label htmlFor="cliente">Cliente</label>
+                        
+                        <Autocomplete
+                          onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
+                            var cliente = value as Cliente;
+                            handleClienteChange(cliente);
+                          }}
+
+                          value={ClienteSelect}
+                          disablePortal
+                          options={clientesSelection}
+                          renderInput={(params) => <TextField {...params} required={true} label="Cliente" />}
+
+                        />
                       </div>
-                      <div className="col 4">
+                      {/* <div className="col 4">
                         <label htmlFor="contatoCliente">Tel. Cliente</label>
                         <input
                           {...register("contatoCliente", { required: { value: true, message: "Campo Necessário!" } })}
                           className="form-control" type="text" />
-                      </div>
+                      </div> */}
                       <div className="col-4">
                         <label htmlFor="valorpago">Valor a ser Pago</label>
                         <CurrencyInput

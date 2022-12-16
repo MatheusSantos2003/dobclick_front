@@ -1,12 +1,14 @@
+import Cliente from "./Cliente.model";
+
 export default class Venda {
 
     constructor(
-        Id: number, usuarioId: number, DataVenda: Date, pagamentoEfetuado: boolean, formaPagamento: FormaPagamentoEnum, valorTotal: number, produto: string, produtoId: number, cliente: string, clienteId: number) {
+        Id: number, usuarioId: number, DataVenda: Date, pagamentoEfetuado: boolean, formaPagamento: FormaPagamentoEnum, valorTotal: number, produto: string, produtoId: number,clienteId: number) {
         this.Id = Id;
         this.usuarioId = usuarioId;
         this.produto = produto;
         this.produtoId = produtoId;
-        this.Cliente = cliente;
+        this.Cliente = clienteId;
         this.clienteId = clienteId;
         this.DataVenda = DataVenda;
         this.pagamentoEfetuado = pagamentoEfetuado;
@@ -20,8 +22,8 @@ export default class Venda {
     usuarioId: number;
     produto: string;
     produtoId: number;
-    Cliente: string;
-    clienteId: number
+    Cliente: number;
+    clienteId: number;
     DataVenda: Date;
     pagamentoEfetuado: boolean;
     formaPagamento: FormaPagamentoEnum;
