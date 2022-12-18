@@ -13,7 +13,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faBoxArchive, faChartLine, faChevronLeft, faChevronRight, faDashboard, faDoorOpen, faUserCircle, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faBoxArchive, faChartLine, faChevronLeft, faChevronRight, faDashboard, faDoorOpen, faTruck, faUserCircle, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { Button, Container, Menu, MenuItem } from '@mui/material';
 import "../../../App.css";
 import { Link, useNavigate } from 'react-router-dom';
@@ -199,7 +199,7 @@ const Layout: React.FC = ({ children }) => {
             </ListItem>
           </Link>
 
-          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/fornecedores-e-clientes"}>
+          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/clientes"}>
             <ListItem button>
 
               <ListItemText>
@@ -207,6 +207,19 @@ const Layout: React.FC = ({ children }) => {
               </ListItemText>
               <ListItemIcon>
                 <FontAwesomeIcon icon={faUsers} color='white' ></FontAwesomeIcon>
+              </ListItemIcon>
+            </ListItem>
+          </Link>
+
+          
+          <Link className='text-decoration-none text-white' onClick={handleDrawerClose} to={"/fornecedores"}>
+            <ListItem button>
+
+              <ListItemText>
+                Fornecedores
+              </ListItemText>
+              <ListItemIcon>
+                <FontAwesomeIcon icon={faTruck} color='white' ></FontAwesomeIcon>
               </ListItemIcon>
             </ListItem>
           </Link>

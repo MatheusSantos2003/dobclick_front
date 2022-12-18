@@ -11,6 +11,7 @@ import RegisterPage from './pages/Register/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPassword/ForgotPassword';
 import ChangePasswordPage from './pages/ChangePassword/ChangePassword';
 import PersonsPage from './pages/Persons/Persons';
+import SuppliersPage from './pages/Suppliers/Suppliers';
 
 
 
@@ -33,14 +34,14 @@ const App = () => {
             <Route path='/cadastro' element={<RegisterPage />} />
             <Route path='/esqueceuSenha' element={<ForgotPasswordPage />} />
             <Route path='/recuperar-senha/:id' element={<ChangePasswordPage />} />
-            <Route path='/fornecedores-e-clientes' element={<PersonsPage />} />
+            <Route path='/clientes' element={<PersonsPage />} />
+            <Route path='/fornecedores' element={<SuppliersPage />} />
           </Routes>
       
       </HashRouter>
     </Providers>
   </>
   );
-
 }
 
 
