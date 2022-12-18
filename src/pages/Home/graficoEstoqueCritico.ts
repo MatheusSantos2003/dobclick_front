@@ -16,6 +16,7 @@ const GraficoEstoqueCritico: ChartType = {
                 color: '#263238'
             },
         },
+        
     },
     
     type: "donut",

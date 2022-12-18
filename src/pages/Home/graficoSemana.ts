@@ -2,9 +2,11 @@ import { ChartType } from "../../models/ChartOptions.model";
 
  const GraficoSemanaOptions: ChartType = {
     options: {
+        
         chart: {
             id: "basic-bar",
             locales: [{
+                
                 name: 'en',
                 options: {
                     months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
@@ -38,6 +40,11 @@ import { ChartType } from "../../models/ChartOptions.model";
                 colors: ["#fff"]
             }
 
+        },
+        title: {
+            text: "Lucro Diário",
+            align: 'left',
+            margin: 10,
         }
     },
     responsive: [{

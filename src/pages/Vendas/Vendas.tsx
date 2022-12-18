@@ -697,11 +697,11 @@ const Vendas = () => {
               <div>
                 <div className="row">
                   <div className="col-md-12 p-3">
-                    {!openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Registrar Venda</button>}
+                    {!openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Registrar Venda</button>}                    
                     {openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Fechar</button>}
-                  </div>
+                  </div>                  
                 </div>
-
+                
                 {isLoading &&
                   <div className="m-5 p-5">
                     <Preloader />
@@ -805,7 +805,7 @@ const Vendas = () => {
                     </div>
                     <div className="d-flex justify-content-end align-items-end">
                       <button className="btn btn-danger mx-1" type="button" onClick={ModalAddProdutoCancelar}>Cancelar</button>
-                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>
+                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>                      
                     </div>
                   </form>}
 
@@ -817,13 +817,14 @@ const Vendas = () => {
                   options={options}
                 />
               </div>
-
+              
+              <button className="relat">Gerar relatório</button>
             </TabPanel>
             <TabPanel value={value} index={1}>
               <div>
                 <div className="row">
-                  <div className="col-md-12 p-3">
-                    {!openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Registrar Compra</button>}
+                  <div className="col-md-12 p-3 alignBTN">
+                    {!openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Registrar Compra</button>}                    
                     {openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Fechar</button>}
                   </div>
                 </div>
@@ -853,7 +854,7 @@ const Vendas = () => {
                         />
                       </div>
                     </div>
-
+                          
                     <div className="row mb-2">
                       <div className="col-4">
                         <label htmlFor="dataCompra">Data da Compra</label>
@@ -918,11 +919,11 @@ const Vendas = () => {
 
                     <div className="d-flex justify-content-end align-items-end">
                       <button className="btn btn-danger mx-1" type="button" onClick={ModalAddCompraCancelar}>Cancelar</button>
-                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>
+                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>                      
                     </div>
                   </form>}
 
-
+                          
 
                 <MUIDataTable
                   title={"Compras"}
@@ -931,9 +932,9 @@ const Vendas = () => {
                   options={optionsCompra}
                 />
               </div>
-
+              <button className="relat"> Gerar relatório </button>
             </TabPanel>
-
+                          
           </Box>
         </Card>
 
