@@ -84,11 +84,15 @@ const Vendas = () => {
     userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
     setisLoading(true);
     setIsPageLoading(true);
-    getProdutos();
-    getClientes();
-    listarVendas();
-    listarCompras();
-
+    getProdutos().then(()=>{
+      getClientes().then(()=> {
+        listarVendas().then(()=>{
+          listarCompras().then(()=>{
+            setisLoading(false);
+          });
+        });
+      });
+    });
 
 
   }, []);
@@ -101,17 +105,23 @@ const Vendas = () => {
       listarVendas();
       return;
     } else {
-      await axios.post<ResponseModel<Venda[]>>(apiURL + "/vendas/listar", { "id": userData?.Id })
-        .then((response) => {
+      await axios.post<ResponseModel<any[]>>(apiURL + "/vendas/listar", { "id": userData?.Id })
+        .then(async (response) => {
           var novalista: Venda[] = [];
-          response.data.data?.map((prod) => {
-            prod.formaPagamentoDisplay = FormaPagamentoEnum[prod.formaPagamento];
-            novalista.push(prod);
-          })
-          setisLoading(false);
+
+
+          if( response.data.data != null){
+            for await (const prod of response.data.data) {
+              // let clienteFound = clientes.find((x) => x.Id === prod.clienteId)
+                prod.formaPagamentoDisplay = FormaPagamentoEnum[prod.formaPagamento];
+                novalista.push({ ...prod, "clienteDesc": prod.cliente.nome });
+                // novalista.push(prod);
+            }
+          }
+        
+          // setisLoading(false);
           setIsPageLoading(false);
           setVenda(novalista);
-          console.log(response.data.data)
           reset();
         }).catch((error) => {
           console.log(error);
@@ -135,7 +145,7 @@ const Vendas = () => {
             Compra.formaPagamentoDisplay = FormaPagamentoEnum[Compra.formaPagamento];
             novalista.push(Compra);
           })
-          setisLoading(false);
+          // setisLoading(false);
           setIsPageLoading(false);
           setCompras(novalista);
           // console.log(novalista);
@@ -162,7 +172,7 @@ const Vendas = () => {
   const getProdutos = async () => {
     var listaProdutos: Produto[] | null = [];
     if (userData?.Id == undefined) {
-      
+
     } else {
       await axios.post<ResponseModel<Produto[]>>(apiURL + "/produtos/listar", { "id": userData?.Id })
         .then((response) => {
@@ -183,23 +193,23 @@ const Vendas = () => {
 
   const getClientes = async () => {
     if (userData?.Id == undefined) {
-      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User; 
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
     } else {
       await axios.get<ResponseModel<any[]>>(apiURL + "/usuarios/listar-clientes/" + userData.Id)
-      .then((response) => {
+        .then((response) => {
           var novalista: any[] = [];
           response.data.data?.map((prod) => {
-              novalista.push(prod);
+            novalista.push(prod);
           })
-          setisLoading(false);
+          // setisLoading(false);
           setIsPageLoading(false);
           setClientes(novalista);
           //   handleClose();
           reset();
-      }).catch((error) => {
+        }).catch((error) => {
           console.log(error);
           setisLoading(false);
-      });
+        });
     }
   }
   // useEffect(() => {
@@ -222,7 +232,7 @@ const Vendas = () => {
     values.produtoId = ProdutoSelect.Id as number;
     values.usuarioId = userData?.Id as number;
     values.valorTotal = _currencyService.Formatar(values?.valorTotalDisplay as string);
-    const data = {...values, "cliente": ClienteSelect};
+    const data = { ...values, "cliente": ClienteSelect };
 
     await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar', { data: data }).then((response) => {
 
@@ -329,8 +339,8 @@ const Vendas = () => {
 
   })
 
-  const clientesSelection = clientes.map(function(cliente: Cliente)  {
-    cliente.label = cliente.nome+ " - " + cliente.contato
+  const clientesSelection = clientes.map(function (cliente: Cliente) {
+    cliente.label = cliente.nome + " - " + cliente.contato
     return cliente;
   })
 
@@ -697,11 +707,11 @@ const Vendas = () => {
               <div>
                 <div className="row">
                   <div className="col-md-12 p-3">
-                    {!openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Registrar Venda</button>}                    
+                    {!openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Registrar Venda</button>}
                     {openModalAddVenda && <button className="btn btn-primary" onClick={handleClickOpen}> Fechar</button>}
-                  </div>                  
+                  </div>
                 </div>
-                
+
                 {isLoading &&
                   <div className="m-5 p-5">
                     <Preloader />
@@ -767,8 +777,8 @@ const Vendas = () => {
                     </div>
                     <div className="row mb-3">
                       <div className="col 4">
-                      <label htmlFor="cliente">Cliente</label>
-                        
+                        <label htmlFor="cliente">Cliente</label>
+
                         <Autocomplete
                           onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
                             var cliente = value as Cliente;
@@ -805,7 +815,7 @@ const Vendas = () => {
                     </div>
                     <div className="d-flex justify-content-end align-items-end">
                       <button className="btn btn-danger mx-1" type="button" onClick={ModalAddProdutoCancelar}>Cancelar</button>
-                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>                      
+                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>
                     </div>
                   </form>}
 
@@ -817,14 +827,14 @@ const Vendas = () => {
                   options={options}
                 />
               </div>
-              
+
               <button className="relat">Gerar relatório</button>
             </TabPanel>
             <TabPanel value={value} index={1}>
               <div>
                 <div className="row">
                   <div className="col-md-12 p-3 alignBTN">
-                    {!openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Registrar Compra</button>}                    
+                    {!openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Registrar Compra</button>}
                     {openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Fechar</button>}
                   </div>
                 </div>
@@ -854,7 +864,7 @@ const Vendas = () => {
                         />
                       </div>
                     </div>
-                          
+
                     <div className="row mb-2">
                       <div className="col-4">
                         <label htmlFor="dataCompra">Data da Compra</label>
@@ -919,11 +929,11 @@ const Vendas = () => {
 
                     <div className="d-flex justify-content-end align-items-end">
                       <button className="btn btn-danger mx-1" type="button" onClick={ModalAddCompraCancelar}>Cancelar</button>
-                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>                      
+                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>
                     </div>
                   </form>}
 
-                          
+
 
                 <MUIDataTable
                   title={"Compras"}
@@ -934,7 +944,7 @@ const Vendas = () => {
               </div>
               <button className="relat"> Gerar relatório </button>
             </TabPanel>
-                          
+
           </Box>
         </Card>
 
