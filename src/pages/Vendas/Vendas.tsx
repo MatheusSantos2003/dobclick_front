@@ -22,6 +22,7 @@ import { toast, ToastContainer } from "react-toastify";
 import Compra from "../../models/Compra.model";
 import { ComprasColumns } from "./ComprasColumns";
 import Cliente from "../../models/Cliente.model";
+import Fornecedor from "../../models/Fornecedor.model";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -39,12 +40,15 @@ const Vendas = () => {
   const [compras, setCompras] = useState<Compra[]>([]);
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [fornecedores,setFornecedores] = useState<Fornecedor[]>([]);
   const [value, setValue] = useState(0);
 
   const [totalBrutoValue, setTotalBruto] = useState<number>(0);
   const [quantidadeSelect, SetQuantidade] = useState<number>(0);
   const [ProdutoSelect, setProdutoSelect] = useState<Produto>(new Produto());
   const [ClienteSelect, setCliente] = useState<Cliente>();
+  const [fornecedoresSelect, setFornecedoresSelect] = useState<Fornecedor>();
+
   const _currencyService = new CurrencyService();
 
   const handleTabsChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -84,13 +88,16 @@ const Vendas = () => {
     userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
     setisLoading(true);
     setIsPageLoading(true);
-    getProdutos().then(()=>{
-      getClientes().then(()=> {
-        listarVendas().then(()=>{
-          listarCompras().then(()=>{
-            setisLoading(false);
+    getProdutos().then(() => {
+      getClientes().then(() => {
+        getFornecedores().then(() => {
+          listarVendas().then(() => {
+            listarCompras().then(() => {
+              setisLoading(false);
+            });
           });
         });
+
       });
     });
 
@@ -110,15 +117,15 @@ const Vendas = () => {
           var novalista: Venda[] = [];
 
 
-          if( response.data.data != null){
+          if (response.data.data != null) {
             for await (const prod of response.data.data) {
               // let clienteFound = clientes.find((x) => x.Id === prod.clienteId)
-                prod.formaPagamentoDisplay = FormaPagamentoEnum[prod.formaPagamento];
-                novalista.push({ ...prod, "clienteDesc": prod.cliente.nome });
-                // novalista.push(prod);
+              prod.formaPagamentoDisplay = FormaPagamentoEnum[prod.formaPagamento];
+              novalista.push({ ...prod, "clienteDesc": prod.cliente.nome });
+              // novalista.push(prod);
             }
           }
-        
+
           // setisLoading(false);
           setIsPageLoading(false);
           setVenda(novalista);
@@ -138,13 +145,18 @@ const Vendas = () => {
       listarCompras()
       return;
     } else {
-      await axios.post<ResponseModel<Venda[]>>(apiURL + "/compras/listar", { "usuarioId": userData?.Id })
-        .then((response) => {
+      await axios.post<ResponseModel<any[]>>(apiURL + "/compras/listar", { "usuarioId": userData?.Id })
+        .then(async (response) => {
           var novalista: Compra[] = [];
-          response.data.data?.map((Compra) => {
-            Compra.formaPagamentoDisplay = FormaPagamentoEnum[Compra.formaPagamento];
-            novalista.push(Compra);
-          })
+          if (response.data.data != null) {
+            for await (const prod of response.data.data) {
+              // let fornecedorFound = fornecedores.find((x) => x.Id === prod.fornecedor.Id);
+           
+              novalista.push({ ...prod, "fornecedorDesc": prod.fornecedor.descricao });
+              // novalista.push(prod);
+            }
+          }
+    
           // setisLoading(false);
           setIsPageLoading(false);
           setCompras(novalista);
@@ -167,6 +179,10 @@ const Vendas = () => {
 
   const handleClienteChange = (cliente: Cliente) => {
     setCliente(cliente);
+  }
+
+  const handleFornecedor = (fornecedor: Fornecedor) => {
+    setFornecedoresSelect(fornecedor);
   }
 
   const getProdutos = async () => {
@@ -204,6 +220,28 @@ const Vendas = () => {
           // setisLoading(false);
           setIsPageLoading(false);
           setClientes(novalista);
+          //   handleClose();
+          reset();
+        }).catch((error) => {
+          console.log(error);
+          setisLoading(false);
+        });
+    }
+  }
+
+  const getFornecedores = async () =>{
+    if (userData?.Id == undefined) {
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+    } else {
+      await axios.get<ResponseModel<any[]>>(apiURL + "/usuarios/listar-fornecedor/" + userData.Id)
+        .then((response) => {
+          var novalista: any[] = [];
+          response.data.data?.map((prod) => {
+            novalista.push(prod);
+          })
+          // setisLoading(false);
+          setIsPageLoading(false);
+          setFornecedores(novalista);
           //   handleClose();
           reset();
         }).catch((error) => {
@@ -287,9 +325,11 @@ const Vendas = () => {
     values.produtoId = ProdutoSelect.Id as number;
     values.usuarioId = userData?.Id as number;
     values.valorCompra = _currencyService.Formatar(values?.valorCompraDisplay as string);
+    const data = { ...values, "fornecedor": fornecedoresSelect };
+
 
     await axios.post<ResponseModel<any>>(apiURL + '/compras/cadastrar', {
-      data: values
+      data: data
     }).then((response) => {
 
       if (response.data.success) {
@@ -342,6 +382,11 @@ const Vendas = () => {
   const clientesSelection = clientes.map(function (cliente: Cliente) {
     cliente.label = cliente.nome + " - " + cliente.contato
     return cliente;
+  })
+
+  const fornecedoresSelection = fornecedores.map(function (forn: Fornecedor) {
+    forn.label = forn.descricao + " - " + forn.contato
+    return forn;
   })
 
   function TabPanel(props: TabPanelProps) {
@@ -898,7 +943,21 @@ const Vendas = () => {
                     </div>
 
                     <div className="row mb-3">
-                      <div className="col 4">
+                      <div className="col 8 mt-3">
+                      <Autocomplete
+                          onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
+                            var forn = value as Fornecedor;
+                            handleFornecedor(forn);
+                          }}
+
+                          value={fornecedoresSelect}
+                          disablePortal
+                          options={fornecedoresSelection}
+                          renderInput={(params) => <TextField {...params} required={true} label="Fornecedor" />}
+
+                        />
+                      </div>
+                      {/* <div className="col 4">
                         <label htmlFor="cliente">Fornecedor</label>
                         <input
                           {...register("fornecedor", { required: { value: true, message: "Campo Necessário!" } })}
@@ -909,7 +968,7 @@ const Vendas = () => {
                         <input
                           {...register("fornecedorContato", { required: { value: true, message: "Campo Necessário!" } })}
                           className="form-control" type="text" />
-                      </div>
+                      </div> */}
                       <div className="col-4">
                         <label htmlFor="valorpago">Valor a ser Pago</label>
                         <CurrencyInput
