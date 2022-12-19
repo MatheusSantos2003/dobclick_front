@@ -165,7 +165,7 @@ const PersonsPage = () => {
             listarClientes();
             return;
         } else {
-            await axios.get<ResponseModel<any[]>>(apiURL + "usuarios/clientes/listar/" + userData.Id)
+            await axios.get<ResponseModel<any[]>>(apiURL + "/usuarios/listar-clientes/" + userData.Id)
                 .then((response) => {
                     var novalista: any[] = [];
                     response.data.data?.map((prod) => {
