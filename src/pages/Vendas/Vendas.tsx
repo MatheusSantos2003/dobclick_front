@@ -9,7 +9,7 @@ import User from "../../models/User.model";
 import './Vendas.css';
 import { AuthContext } from "../../context/AuthContext";
 import { VendasColumns } from './VendasColumns';
-
+import { saveAs } from 'file-saver';
 
 
 import { Produto } from "../../models/Produto.model";
@@ -40,7 +40,7 @@ const Vendas = () => {
   const [compras, setCompras] = useState<Compra[]>([]);
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [fornecedores,setFornecedores] = useState<Fornecedor[]>([]);
+  const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [value, setValue] = useState(0);
 
   const [totalBrutoValue, setTotalBruto] = useState<number>(0);
@@ -48,6 +48,10 @@ const Vendas = () => {
   const [ProdutoSelect, setProdutoSelect] = useState<Produto>(new Produto());
   const [ClienteSelect, setCliente] = useState<Cliente>();
   const [fornecedoresSelect, setFornecedoresSelect] = useState<Fornecedor>();
+  const [dataInicial, setDataInicial] = useState<string>();
+  const [dataFinal, setDataFinal] = useState<string>();
+
+
 
   const _currencyService = new CurrencyService();
 
@@ -104,6 +108,43 @@ const Vendas = () => {
 
   }, []);
 
+  const handleReportGenerate = async (option: string) => {
+    setisLoading(true);
+    setIsPageLoading(true);
+    if (userData?.Id == undefined) {
+      userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+    }
+    let data = {
+      "userId": userData.Id,
+      "dataInicial": dataInicial,
+      "dataFinal": dataFinal,
+      "tipo": option
+    }
+    await axios.post(apiURL + "/relatorios/csv", data, { responseType: "blob", }).then((response) => {
+
+
+
+      saveAs(response.data, 'report.csv');
+
+      setisLoading(false);
+      setIsPageLoading(false)
+    }).catch((error) => {
+      console.log(error);
+      setisLoading(false);
+      setIsPageLoading(false);
+    });
+  }
+
+  const updateDataInicialValue = (evt: any) => {
+    const val = evt.target.value;
+    setDataInicial(val);
+  }
+
+  const updateDataFinalValue = (evt: any) => {
+    const val = evt.target.value;
+    setDataFinal(val);
+  }
+
 
 
   async function listarVendas() {
@@ -151,12 +192,12 @@ const Vendas = () => {
           if (response.data.data != null) {
             for await (const prod of response.data.data) {
               // let fornecedorFound = fornecedores.find((x) => x.Id === prod.fornecedor.Id);
-           
+
               novalista.push({ ...prod, "fornecedorDesc": prod.fornecedor.descricao });
               // novalista.push(prod);
             }
           }
-    
+
           // setisLoading(false);
           setIsPageLoading(false);
           setCompras(novalista);
@@ -229,7 +270,7 @@ const Vendas = () => {
     }
   }
 
-  const getFornecedores = async () =>{
+  const getFornecedores = async () => {
     if (userData?.Id == undefined) {
       userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
     } else {
@@ -872,8 +913,20 @@ const Vendas = () => {
                   options={options}
                 />
               </div>
+              <div className="row my-5">
+                <div className="col-2">
+                  <label htmlFor="">Inicio</label>
+                  <input value={dataInicial} onChange={event => updateDataInicialValue(event)} className="form-control" type="date" placeholder="" />
+                </div>
+                <div className="col-2">
+                  <label htmlFor="">Final</label>
+                  <input value={dataFinal} onChange={event => updateDataFinalValue(event)} className="form-control" type="date" placeholder="" />
+                </div>
+                <div className="col-2">
+                  <button onClick={() => handleReportGenerate('venda')} className="relat">Gerar relatório</button>
+                </div>
+              </div>
 
-              <button className="relat">Gerar relatório</button>
             </TabPanel>
             <TabPanel value={value} index={1}>
               <div>
@@ -944,7 +997,7 @@ const Vendas = () => {
 
                     <div className="row mb-3">
                       <div className="col 8 mt-3">
-                      <Autocomplete
+                        <Autocomplete
                           onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
                             var forn = value as Fornecedor;
                             handleFornecedor(forn);
@@ -1001,7 +1054,19 @@ const Vendas = () => {
                   options={optionsCompra}
                 />
               </div>
-              <button className="relat"> Gerar relatório </button>
+              <div className="row my-5">
+                <div className="col-2">
+                  <label htmlFor="">Inicio</label>
+                  <input className="form-control" type="date" placeholder="" />
+                </div>
+                <div className="col-2">
+                  <label htmlFor="">Final</label>
+                  <input className="form-control" type="date" placeholder="" />
+                </div>
+                <div className="col-2">
+                  <button onClick={() => handleReportGenerate('compra')} className="relat"> Gerar relatório </button>
+                </div>
+              </div>
             </TabPanel>
 
           </Box>
