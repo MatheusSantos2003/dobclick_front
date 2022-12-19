@@ -192,7 +192,7 @@ const PersonsPage = () => {
         if (userData?.Id == undefined) {
             userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
         }
-        await axios.post<ResponseModel<any[]>>(apiURL + "/usuarios/clientes", { "nome": values.nome, "contato": values.contato, "userId": userData?.Id })
+        await axios.post<ResponseModel<any[]>>(apiURL + "/usuarios/listar-clientes", { "nome": values.nome, "contato": values.contato, "userId": userData?.Id })
             .then((response) => {
 
                 if (response.data.success) {
