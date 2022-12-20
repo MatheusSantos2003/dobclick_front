@@ -52,20 +52,11 @@ const Vendas = () => {
 
   const [isPageLoading, setIsPageLoading] = useState(false);
 
-  const [openModalAddCompras, setOpenModalAddCompras] = useState(false);
   const [isLoading, setisLoading] = useState(false);
   const [vendas, setVenda] = useState<Venda[]>([]);
   const [compras, setCompras] = useState<Compra[]>([]);
-
-  const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [value, setValue] = useState(0);
-
   const [quantidadeSelect, SetQuantidade] = useState<number>(0);
-  const [ProdutoSelect, setProdutoSelect] = useState<Produto>(new Produto());
-  const [ClienteSelect, setCliente] = useState<Cliente>();
-  const [fornecedoresSelect, setFornecedoresSelect] = useState<Fornecedor>();
-
-
 
   const _currencyService = new CurrencyService();
 
@@ -78,22 +69,7 @@ const Vendas = () => {
   let userDataState: User | null = new User();
   const [userData, setUserData] = useState(userDataState);
 
-  var column = VendasColumns;
-  var comprasColumn = ComprasColumns;
-
   const context = useContext(AuthContext);
-
-
-
-  // const handlClickCompraOpen = () => {
-
-  //   setOpenModalAddCompras(!openModalAddCompras);
-  // }
-
-  // const ModalAddCompraCancelar = () => {
-  //   reset();
-  //   setOpenModalAddCompras(false);
-  // }
 
   useEffect(() => {
     setUserData(JSON.parse(localStorage.getItem("AppUsuario") || "null") as User);
@@ -104,11 +80,9 @@ const Vendas = () => {
 
   useEffect(() => {
     if (userData.Id) {
-      getFornecedores().then(() => {
-        listarVendas().then(() => {
-          listarCompras().then(() => {
-            setisLoading(false);
-          });
+      listarVendas().then(() => {
+        listarCompras().then(() => {
+          setisLoading(false);
         });
       });
     }
@@ -166,101 +140,24 @@ const Vendas = () => {
       });
   }
 
-  const handleProductChange = (prod: Produto) => {
-    setProdutoSelect(prod);
-  }
+  // const handleProductChange = (prod: Produto) => {
+  //   setProdutoSelect(prod);
+  // }
 
-  const handleClienteChange = (cliente: Cliente) => {
-    setCliente(cliente);
-  }
+  // const handleClienteChange = (cliente: Cliente) => {
+  //   setCliente(cliente);
+  // }
 
-  const handleFornecedor = (fornecedor: Fornecedor) => {
-    setFornecedoresSelect(fornecedor);
-  }
+  // const handleFornecedor = (fornecedor: Fornecedor) => {
+  //   setFornecedoresSelect(fornecedor);
+  // }
 
-  const getFornecedores = async () => {
-    await axios.get<ResponseModel<any[]>>(apiURL + "/usuarios/listar-fornecedor/" + userData.Id)
-      .then((response) => {
-        var novalista: any[] = [];
-        response.data.data?.map((prod) => {
-          novalista.push(prod);
-        })
-        // setisLoading(false);
-        setIsPageLoading(false);
-        setFornecedores(novalista);
-        //   handleClose();
-        // reset();
-      }).catch((error) => {
-        console.log(error);
-        setisLoading(false);
-      });
-  }
   // useEffect(() => {
   //   if (ProdutoEditing?.Id != 0 && ProdutoEditing?.Id != null) {
   //     setopenModalEditProduto(true);
 
   //   }
   // }, [ProdutoEditing])
-
-  // const onSubmitCompra = async (values: any) => {
-  //   setIsPageLoading(true);
-  //   setisLoading(true);
-
-  //   if (userData?.Id == null) {
-  //     userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
-  //   }
-  //   values.produtoId = ProdutoSelect.Id as number;
-  //   values.usuarioId = userData?.Id as number;
-  //   values.valorCompra = _currencyService.Formatar(values?.valorCompraDisplay as string);
-  //   const data = { ...values, "fornecedor": fornecedoresSelect };
-
-
-  //   await axios.post<ResponseModel<any>>(apiURL + '/compras/cadastrar', {
-  //     data: data
-  //   }).then((response) => {
-
-  //     if (response.data.success) {
-  //       toast.success(response.data.message ? response.data.message : "Sucesso!", {
-  //         type: "success",
-  //         theme: "colored",
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //       });
-  //       listarCompras();
-  //       reset();
-  //       setProdutoSelect(new Produto());
-  //       setisLoading(false);
-  //       setOpenModalAddCompras(false)
-  //     } else {
-  //       toast.error(response.data.message, {
-  //         type: "error",
-  //         theme: "colored",
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //       });
-  //       listarCompras();
-  //       reset();
-  //       setProdutoSelect(new Produto());
-  //       setisLoading(false);
-  //       setOpenModalAddCompras(false)
-  //     }
-  //   });
-  // };
-
-  // const fornecedoresSelection = fornecedores.map(function (forn: Fornecedor) {
-  //   forn.label = forn.descricao + " - " + forn.contato
-  //   return forn;
-  // })
 
   function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -610,10 +507,10 @@ const Vendas = () => {
             </Box>
 
             <TabPanel value={value} index={0}>
-              <VendasInterface vendas={vendas} column={column} options={options} authUser={userData} isLoadingMain={isLoading} />
+              <VendasInterface vendas={vendas} column={VendasColumns} options={options} authUser={userData} isLoadingMain={isLoading} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-            {/* <ComprasInterface/> */}
+              <ComprasInterface compras={compras} column={ComprasColumns} options={optionsCompra} authUser={userData} isLoadingMain={isLoading} />
             </TabPanel>
           </Box>
         </Card>
@@ -637,8 +534,6 @@ const VendasInterface = (props: any) => {
   const [dataFinal, setDataFinal] = useState<string>();
 
   const _currencyService = new CurrencyService();
-  const [vendas, setVenda] = useState<Venda[]>([]);
-
 
   const { control, register, handleSubmit, reset, setValue: setValueControl, formState: { errors } } = useForm<{
     controls: {
@@ -668,6 +563,11 @@ const VendasInterface = (props: any) => {
     },
   });
 
+  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    control, // control props comes from useForm (optional: if you are using FormContext)
+    name: "controls", // unique name for your Field Array
+  });
+
   useEffect(() => {
     if (props.authUser.Id) {
       setUserData(props.authUser);
@@ -679,12 +579,6 @@ const VendasInterface = (props: any) => {
       setIsLoading(props.isLoadingMain);
     }
   }, [props.isLoadingMain]);
-
-  useEffect(() => {
-    if (props.vendas) {
-      setVenda(props.vendas);
-    }
-  }, [props.vendas]);
 
   const getProdutos = async () => {
     setProdutos((prev: any) => ({
@@ -774,12 +668,6 @@ const VendasInterface = (props: any) => {
       });
   }
 
-
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
-    control, // control props comes from useForm (optional: if you are using FormContext)
-    name: "controls", // unique name for your Field Array
-  });
-
   const handleClickOpen = () => {
     setOpenModalAddVenda(!openModalAddVenda);
   };
@@ -834,8 +722,6 @@ const VendasInterface = (props: any) => {
 
   const onSubmit = async (values: any) => {
     console.log(values);
-
-
 
     for await (const cont of values.controls) {
       cont.usuarioId = userData?.Id as number;
@@ -893,11 +779,6 @@ const VendasInterface = (props: any) => {
 
   }
 
-
-
-
-  
-
   return (
     <>
       <div>
@@ -923,7 +804,7 @@ const VendasInterface = (props: any) => {
                 var errorControls = errors.controls;
                 // console.log(optionsSelect);
 
-      
+
 
                 return (
                   <Accordion key={item.id} defaultExpanded={true}>
@@ -1096,140 +977,439 @@ const VendasInterface = (props: any) => {
   )
 }
 
-// const ComprasInterface = (props: any) => {
-//   const [openModalAddCompras, setOpenModalAddCompras] = useState(false);
-//   const [totalBrutoValue, setTotalBruto] = useState<number>(0);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [userData, setUserData] = useState<User>(new User());
+const ComprasInterface = (props: any) => {
+  const [openModalAddCompras, setOpenModalAddCompras] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState<User>(new User());
 
-//   const dataProdutos: Produto[] = [];
-//   const [produtos, setProdutos] = useState<any>({ loading: false, d: dataProdutos });
-//   const dataClientes: Cliente[] = [];
-//   const [clientes, setClientes] = useState<any>({ loading: false, d: dataClientes });
+  const dataProdutos: Produto[] = [];
+  const [produtos, setProdutos] = useState<any>({ loading: false, d: dataProdutos });
 
-//   const [dataInicial, setDataInicial] = useState<string>();
-//   const [dataFinal, setDataFinal] = useState<string>();
+  const dataFornecedores: Produto[] = [];
+  const [fornecedores, setFornecedores] = useState<any>({ loading: false, d: dataFornecedores });
 
-//   const _currencyService = new CurrencyService();
-//   const [vendas, setVenda] = useState<Venda[]>([]);
+  const [dataInicial, setDataInicial] = useState<string>();
+  const [dataFinal, setDataFinal] = useState<string>();
 
-//   return (
-   
-//  <div>
-//   <div className="row">
-//     <div className="col-md-12 p-3 alignBTN">
-//       {!openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Registrar Compra</button>}
-//       {openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Fechar</button>}
-//     </div>
-//   </div>
-
-//   {!isLoading && openModalAddCompras &&
-//     <form onSubmit={handleSubmit(onSubmitCompra)} className="my-4 p-4 border border-2">
-
-//       <div className="row">
-//         <div className="col-12 mb-3">
-//           <input type="hidden" value={userData?.Id} {...register("usuarioId")} />
-//           <label
-//             htmlFor="exampleInputPassword1"
-//             className="form-label"
-//           >Produto
-//           </label>
-//           <Autocomplete
-//             onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
-//               var produto = value as Produto;
-//               handleProductChange(produto);
-//             }}
-//             disablePortal
-//             value={ProdutoSelect}
-//             id="combo-box-demo"
-//             options={optionsSelect}
-//             renderInput={(params) => <TextField {...params} required={true} label="Produto" />}
-
-//           />
-//         </div>
-//       </div>
-
-//       <div className="row mb-2">
-//         <div className="col-4">
-//           <label htmlFor="dataCompra">Data da Compra</label>
-//           <input
-//             {...register("dataCompra", { required: { value: true, message: "Campo Necessário!" } })}
-//             type="date" className="form-control" name="dataCompra" />
-//         </div>
-//         <div className="col-4">
-//           <label htmlFor="quantidade">Quantidade</label>
-//           <input
-//             {...register("quantidade", { required: { value: true, message: "Campo Necessário!" } })}
-
-//             type="number" step={1} min={0} className="form-control" name="quantidade" />
-//         </div>
-//         <div className="col-4">
-//           <label htmlFor="quantidade">Forma Pagam.</label>
-//           <select
-//             {...register("formaPagamento", { required: { value: true, message: "Campo Necessário!" } })}
-//             className="form-control"
-
-//           >
-//             <option key={''} value={''}></option>
-//             <option key={1} value={0}>Dinheiro</option>
-//             <option key={2} value={1}>Crédito</option>
-//             <option key={3} value={2}>Débito</option>
-//             <option key={4} value={3}>Cheque</option>
+  const _currencyService = new CurrencyService();
 
 
-//           </select>
-//         </div>
-//       </div>
+  const { control, register, handleSubmit, reset, setValue: setValueControl, formState: { errors } } = useForm<{
+    controls: {
+      usuarioId: any,
+      produtoId: any,
+      datavenda: string,
+      quantidade: string,
+      formaPag: string,
+      fornecedor: any,
+      valorTotal: any,
+      valorTotalDisplay: string
+    }[];
+  }>({
+    defaultValues: {
+      controls: [
+        {
+          usuarioId: null,
+          produtoId: null,
+          datavenda: '',
+          quantidade: '',
+          formaPag: '',
+          fornecedor: null,
+          valorTotal: null,
+          valorTotalDisplay: ''
+        }
+      ],
+    },
+  });
 
-//       <div className="row mb-3">
-//         <div className="col 8 mt-3">
-//           <Autocomplete
-//             onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
-//               var forn = value as Fornecedor;
-//               handleFornecedor(forn);
-//             }}
+  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    control, // control props comes from useForm (optional: if you are using FormContext)
+    name: "controls", // unique name for your Field Array
+  });
 
-//             value={fornecedoresSelect}
-//             disablePortal
-//             options={fornecedoresSelection}
-//             renderInput={(params) => <TextField {...params} required={true} label="Fornecedor" />}
+  const getProdutos = async () => {
+    setProdutos((prev: any) => ({
+      ...prev,
+      loading: true
+    }));
 
-//           />
-//         </div>
-//         <div className="col-4">
-//           <label htmlFor="valorpago">Valor a ser Pago</label>
-//           <CurrencyInput
-//             id="input-example"
-//             decimalSeparator=","
-//             groupSeparator=""
-//             placeholder="R$ 0.00"
-//             intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-//             {...register("valorCompraDisplay", { required: { value: true, message: "Campo Necessário!" } })}
-//             className={`form-control ${errors.precoDisplay?.message != null ? "is-invalid" : ""}`}
-//           >
-//           </CurrencyInput>
-//         </div>
+    var listaProdutos: Produto[] | null = [];
+    await axios.post<ResponseModel<Produto[]>>(apiURL + "/produtos/listar", { "id": userData?.Id })
+      .then((response) => {
+        var novalista: Produto[] = [];
+        response.data.data?.map((prod) => {
+          novalista.push(prod);
+        });
 
-//       </div>
+        listaProdutos = novalista;
+      }).catch((error) => {
+        console.log(error);
+      });
+
+    const withLabel = listaProdutos && listaProdutos.map(function (prod: Produto) {
+      prod.label = prod.codigo + " - " + prod.descricao + " - " + prod.cor + " - " + prod.genero + " - " + prod.marca;
+      return prod;
+    });
+
+    setProdutos((prev: any) => ({
+      ...prev,
+      loading: false,
+      d: withLabel
+    }));
+  }
+
+  const getFornecedores = async () => {
+    setFornecedores((prev: any) => ({
+      ...prev,
+      loading: true
+    }));
+
+    var listaFornecedores: Fornecedor[] | null = [];
+    await axios.get<ResponseModel<any[]>>(apiURL + "/usuarios/listar-fornecedor/" + userData.Id)
+      .then((response) => {
+        var novalista: any[] = [];
+        response.data.data?.map((prod) => {
+          novalista.push(prod);
+        })
+
+        listaFornecedores = novalista;
+      }).catch((error) => {
+        console.log(error);
+      });
+
+    const withLabel = listaFornecedores && listaFornecedores.map(function (prod: Fornecedor) {
+      prod.label = prod.descricao + " - " + prod.contato;
+      return prod;
+    });
+
+    setFornecedores((prev: any) => ({
+      ...prev,
+      loading: false,
+      d: withLabel
+    }));
+  }
+
+  useEffect(() => {
+    if (props.authUser.Id) {
+      setUserData(props.authUser);
+    }
+  }, [props.authUser]);
+
+  useEffect(() => {
+    if (props.isLoadingMain) {
+      setIsLoading(props.isLoadingMain);
+    }
+  }, [props.isLoadingMain]);
+
+  const handleClickOpen = () => {
+    setOpenModalAddCompras(!openModalAddCompras);
+  };
+
+  const removerProdutoCriar = (ev: any, index: number) => {
+    ev.stopPropagation();
+    fields.length == 1 ? '' : remove(index);
+  }
+
+  const onSubmitCompras = async (values: any) => {
+    console.log(values);
+
+    for await (const cont of values.controls) {
+      cont.usuarioId = userData?.Id as number;
+      cont.valorTotal = _currencyService.Formatar(cont?.valorTotalDisplay as string);
+
+      const data = { ...cont, "cliente": cont.cliente };
+
+      //   await axios.post<ResponseModel<any>>(apiURL + '/compras/cadastrar', {
+      //     data: data
+      //   }).then((response) => {
+
+      //     if (response.data.success) {
+      //       toast.success(response.data.message ? response.data.message : "Sucesso!", {
+      //         type: "success",
+      //         theme: "colored",
+      //         position: "top-right",
+      //         autoClose: 5000,
+      //         hideProgressBar: false,
+      //         closeOnClick: true,
+      //         pauseOnHover: true,
+      //         draggable: true,
+      //         progress: undefined,
+      //       });
+      //       listarCompras();
+      //       reset();
+      //       setProdutoSelect(new Produto());
+      //       setisLoading(false);
+      //       setOpenModalAddCompras(false)
+      //     } else {
+      //       toast.error(response.data.message, {
+      //         type: "error",
+      //         theme: "colored",
+      //         position: "top-right",
+      //         autoClose: 5000,
+      //         hideProgressBar: false,
+      //         closeOnClick: true,
+      //         pauseOnHover: true,
+      //         draggable: true,
+      //         progress: undefined,
+      //       });
+      //       listarCompras();
+      //       reset();
+      //       setProdutoSelect(new Produto());
+      //       setisLoading(false);
+      //       setOpenModalAddCompras(false)
+      //     }
+      //   })
+      // .catch((error: ResponseModel<any>) => {
+      //         console.log(error.message);
+      //       }).finally(function () {
+      //         // setisLoading(false);
+      //         listarVendas();
+      //       });
+    }
+    // setisLoading(true);
+
+    // if (userData?.Id == null) {
+    //   userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+    // }
+
+    // values.produtoId = ProdutoSelect.Id as number;
+
+  }
+
+  const handleReportGenerate = async (option: string) => {
+    // setisLoading(true);
+    // setIsPageLoading(true);
+    // if (userData?.Id == undefined) {
+    //   userData = JSON.parse(localStorage.getItem("AppUsuario") || "null") as User;
+    // }
+    let data = {
+      "userId": userData.Id,
+      "dataInicial": dataInicial,
+      "dataFinal": dataFinal,
+      "tipo": option
+    }
+    await axios.post(apiURL + "/relatorios/csv", data, { responseType: "blob", }).then((response) => {
 
 
-//       <div className="d-flex justify-content-end align-items-end">
-//         <button className="btn btn-danger mx-1" type="button" onClick={ModalAddCompraCancelar}>Cancelar</button>
-//         <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>
-//       </div>
-//     </form>
-//   }
 
-//   <MUIDataTable
-//     title={"Compras"}
-//     data={compras}
-//     columns={comprasColumn}
-//     options={optionsCompra}
-//   />
-// </div>
+      saveAs(response.data, 'report.csv');
 
-//   );
-// }
+      // setisLoading(false);
+      // setIsPageLoading(false)
+    }).catch((error) => {
+      console.log(error);
+      // setisLoading(false);
+      // setIsPageLoading(false);
+    });
+  }
+
+  const updateDataInicialValue = (evt: any) => {
+    const val = evt.target.value;
+    setDataInicial(val);
+  }
+
+  const updateDataFinalValue = (evt: any) => {
+    const val = evt.target.value;
+    setDataFinal(val);
+  }
+
+  return (
+    <>
+      <div>
+        <div className="mb-3">
+          {!openModalAddCompras && (
+            <button className="btn btn-primary" disabled={isLoading} onClick={() => {
+              handleClickOpen();
+              getProdutos();
+              getFornecedores();
+            }}> {isLoading ? 'Carregando dados...' : 'Registrar Compra'}</button>
+          )
+          }
+          {openModalAddCompras && (
+            <button className="btn btn-primary" disabled={isLoading} onClick={handleClickOpen}> Fechar</button>
+          )}
+        </div>
+
+        {!isLoading && openModalAddCompras &&
+          <form onSubmit={handleSubmit(onSubmitCompras)} className="mb-3 p-4 border border-2">
+
+            <div>
+              {fields.map((item: any, index: any) => {
+                var errorControls = errors.controls;
+                // console.log(optionsSelect);
+
+
+
+                return (
+                  <Accordion key={item.id} defaultExpanded={true}>
+                    <AccordionSummary
+                      expandIcon={<FontAwesomeIcon icon={faChevronDown} size={'1x'} />}
+                      aria-controls={`produto-${index}-content`}
+                      id={`produto-${index}-header`}
+                    >
+                      <Typography>
+                        <button
+                          className="btn btn-danger mx-1"
+                          type="button"
+                          onClick={(ev) => removerProdutoCriar(ev, index)}
+                        >
+                          <FontAwesomeIcon icon={faMinus} size={'1x'} />
+                        </button>
+                        Produto - {index + 1}
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div className="row">
+                        <div className="col-12 mb-3">
+                          <input type="hidden" value={userData?.Id} {...register(`controls.${index}.usuarioId`)} />
+                          <label className="form-label">Produto</label>
+
+                          <input type="hidden" value={userData?.Id} {...register(`controls.${index}.produtoId`, { required: { value: true, message: "Campo Necessário!" } })} />
+                          <Autocomplete
+                            options={produtos.d}
+                            getOptionLabel={(option: any) => option.label}
+                            isOptionEqualToValue={(option: any, value: any) => option.Id === value.Id}
+                            onChange={(event: any, produto: Produto | any) => {
+                              setValueControl(`controls.${index}.produtoId`, produto.Id, { shouldValidate: true });
+                            }}
+                            renderInput={(params) => <TextField {...params} label="Produto" />}
+                          />
+                          {errorControls && errorControls[index]?.produtoId &&
+                            <p className="text-danger">{errorControls && errorControls[index]?.produtoId?.message}</p>
+                          }
+                        </div>
+                        <div className="col-4 mb-3">
+                          <label className="form-label">Data de Venda</label>
+                          <input
+                            {...register(`controls.${index}.datavenda`, { required: { value: true, message: "Campo Necessário!" } })}
+                            type="date"
+                            className={`form-control ${errorControls && errorControls[index]?.datavenda != null ? "is-invalid" : ""}`}
+                          />
+                          {errorControls && errorControls[index]?.datavenda &&
+                            <p className="text-danger">{errorControls && errorControls[index]?.datavenda?.message}</p>
+                          }
+                        </div>
+                        <div className="col-4 mb-3">
+                          <label className="form-label">Quantidade</label>
+                          <input
+                            {...register(`controls.${index}.quantidade`, { required: { value: true, message: "Campo Necessário!" } })}
+                            type="number"
+                            step={1}
+                            min={0}
+                            className={`form-control ${errorControls && errorControls[index]?.quantidade != null ? "is-invalid" : ""}`}
+                          />
+                          {errorControls && errorControls[index]?.quantidade &&
+                            <p className="text-danger">{errorControls && errorControls[index]?.quantidade?.message}</p>
+                          }
+                        </div>
+                        <div className="col-4 mb-3">
+                          <label className="form-label">Forma Pagam.</label>
+                          <select
+                            {...register(`controls.${index}.formaPag`, { required: { value: true, message: "Campo Necessário!" } })}
+                            className={`form-control ${errorControls && errorControls[index]?.formaPag != null ? "is-invalid" : ""}`}
+                          >
+                            <option key={''} value={''}></option>
+                            <option key={1} value={0}>Dinheiro</option>
+                            <option key={2} value={1}>Crédito</option>
+                            <option key={3} value={2}>Débito</option>
+                            <option key={4} value={3}>Cheque</option>
+                          </select>
+                          {errorControls && errorControls[index]?.formaPag &&
+                            <p className="text-danger">{errorControls && errorControls[index]?.formaPag?.message}</p>
+                          }
+                        </div>
+                        <div className="col mb-3">
+                          <label className="form-label">Fornecedor</label>
+
+                          <input type="hidden" value={userData?.Id} {...register(`controls.${index}.fornecedor`, { required: { value: true, message: "Campo Necessário!" } })} />
+                          <Autocomplete
+                            options={fornecedores.d}
+                            getOptionLabel={(option: any) => option.label}
+                            isOptionEqualToValue={(option: any, value: any) => option.Id === value.Id}
+                            onChange={(event: any, fornecedor: Fornecedor | any) => {
+                              setValueControl(`controls.${index}.fornecedor`, fornecedor.Id, { shouldValidate: true });
+                            }}
+                            renderInput={(params) => <TextField {...params} label="Fornecedor" />}
+                          />
+                          {errorControls && errorControls[index]?.fornecedor &&
+                            <p className="text-danger">{errorControls && errorControls[index]?.fornecedor?.message}</p>
+                          }
+                        </div>
+                        <div className="col-4 mb-3">
+                          <label className="form-label">Valor a ser Pago</label>
+                          <CurrencyInput
+                            decimalSeparator=","
+                            groupSeparator=""
+                            placeholder="R$ 0.00"
+                            intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+                            {...register(`controls.${index}.valorTotalDisplay`, { required: { value: true, message: "Campo Necessário!" } })}
+                            className={`form-control ${errorControls && errorControls[index]?.valorTotalDisplay != null ? "is-invalid" : ""}`}
+                          />
+                          {errorControls && errorControls[index]?.valorTotalDisplay &&
+                            <p className="text-danger">{errorControls && errorControls[index]?.valorTotalDisplay?.message}</p>
+                          }
+                        </div>
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
+                )
+              })}
+
+              <div className="d-flex justify-content-between align-items-end" style={{
+                position: 'sticky',
+                bottom: '-24px',
+                background: 'white',
+                padding: '20px 24px',
+                margin: '6px -20px 0 -24px'
+              }}>
+                <button className="btn btn-primary mx-1" type="button" onClick={() => append({
+                  usuarioId: 0,
+                  produtoId: '',
+                  datavenda: '',
+                  quantidade: '',
+                  formaPag: '',
+                  fornecedor: {},
+                  valorTotal: '',
+                  valorTotalDisplay: ''
+                })}>Adicionar Produto</button>
+                <div className="d-flex justify-content-end align-items-end">
+                  <button className="btn btn-danger mx-1" type="button" onClick={handleClickOpen}>Cancelar</button>
+                  <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Venda </button>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        }
+
+        {props.compras && props.column && props.options && (
+          <MUIDataTable
+            title={"Compras"}
+            data={props.compras}
+            columns={props.column}
+            options={props.options}
+          />
+        )}
+
+        <div className="row my-5">
+          <div className="col-2">
+            <label htmlFor="">Inicio</label>
+            <input value={dataInicial} onChange={event => updateDataInicialValue(event)} className="form-control" type="date" placeholder="" />
+          </div>
+          <div className="col-2">
+            <label htmlFor="">Final</label>
+            <input value={dataFinal} onChange={event => updateDataFinalValue(event)} className="form-control" type="date" placeholder="" />
+          </div>
+          <div className="col-2">
+            <button onClick={() => handleReportGenerate('compra')} className="relat">Gerar relatório</button>
+          </div>
+        </div>
+      </div>
+
+      {/* <button className="relat">Gerar relatório</button> */}
+    </>
+  )
+}
 
 
 export default Vendas
