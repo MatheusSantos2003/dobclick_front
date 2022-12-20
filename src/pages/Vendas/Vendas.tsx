@@ -124,7 +124,7 @@ const Vendas = () => {
           for await (const prod of response.data.data) {
             // let clienteFound = clientes.find((x) => x.Id === prod.clienteId)
             prod.formaPagamentoDisplay = FormaPagamentoEnum[prod.formaPagamento];
-            novalista.push({ ...prod, "clienteDesc": prod.cliente.nome });
+            novalista.push({ ...prod, "clienteDesc": prod.clienteDesc });
             // novalista.push(prod);
           }
         }
@@ -342,156 +342,156 @@ const Vendas = () => {
     }
   };
 
-  // const optionsCompra: MUIDataTableOptions = {
-  //   filterType: 'checkbox',
-  //   onRowClick: ((rowdata, rowmeta) => {
+  const optionsCompra: MUIDataTableOptions = {
+    filterType: 'checkbox',
+    onRowClick: ((rowdata, rowmeta) => {
 
-  //   }),
-  //   onRowsDelete: ((rowsDeleted, newTableData) => {
-  //     var listaIndices: number[] = [];
+    }),
+    onRowsDelete: ((rowsDeleted, newTableData) => {
+      var listaIndices: number[] = [];
 
-  //     rowsDeleted.data.map((values) => {
-  //       listaIndices.push(values.index);
-  //     });
+      rowsDeleted.data.map((values) => {
+        listaIndices.push(values.index);
+      });
 
-  //     var listaIds: any[] = [];
+      var listaIds: any[] = [];
 
-  //     listaIndices.map((indice) => {
-  //       listaIds?.push(compras[indice].Id);
-  //     });
+      listaIndices.map((indice) => {
+        listaIds?.push(compras[indice].Id);
+      });
 
 
-  //     exlcuirCompras(listaIds);
-  //   }),
-  //   rowsSelected: idsSelecionados,
-  //   print: false,
-  //   download: false,
-  //   textLabels: {
-  //     body: {
-  //       noMatch: "Desculpe, Nenhum Dado foi encontrado!",
-  //       toolTip: "Filtrar",
-  //       columnHeaderTooltip: column => `Ordenar por ${column.label}`
-  //     },
-  //     pagination: {
-  //       next: "Próxima Pagina",
-  //       previous: "Pagina Anterior",
-  //       rowsPerPage: "Linhas por pagina:",
-  //       displayRows: "De",
-  //     },
-  //     toolbar: {
-  //       search: "Pesquisar",
-  //       downloadCsv: "Download do CSV",
-  //       print: "Imprimir",
-  //       viewColumns: "Ver Colunas",
-  //       filterTable: "Filtrar Tabela"
-  //     },
-  //     filter: {
-  //       all: "TUDO",
-  //       title: "FILTROS",
-  //       reset: "REINICIAR",
-  //     },
-  //     viewColumns: {
-  //       title: "Mostrar Colunas",
-  //       titleAria: "Mostrar/Esconder Colunas da Tabela",
-  //     },
-  //     selectedRows: {
-  //       text: "Coluna(s) selecionada(s)",
-  //       delete: "Deletar",
-  //       deleteAria: "Deletar linhas selecionadas",
-  //     }
-  //   }
-  // };
+      exlcuirCompras(listaIds);
+    }),
+    rowsSelected: idsSelecionados,
+    print: false,
+    download: false,
+    textLabels: {
+      body: {
+        noMatch: "Desculpe, Nenhum Dado foi encontrado!",
+        toolTip: "Filtrar",
+        columnHeaderTooltip: column => `Ordenar por ${column.label}`
+      },
+      pagination: {
+        next: "Próxima Pagina",
+        previous: "Pagina Anterior",
+        rowsPerPage: "Linhas por pagina:",
+        displayRows: "De",
+      },
+      toolbar: {
+        search: "Pesquisar",
+        downloadCsv: "Download do CSV",
+        print: "Imprimir",
+        viewColumns: "Ver Colunas",
+        filterTable: "Filtrar Tabela"
+      },
+      filter: {
+        all: "TUDO",
+        title: "FILTROS",
+        reset: "REINICIAR",
+      },
+      viewColumns: {
+        title: "Mostrar Colunas",
+        titleAria: "Mostrar/Esconder Colunas da Tabela",
+      },
+      selectedRows: {
+        text: "Coluna(s) selecionada(s)",
+        delete: "Deletar",
+        deleteAria: "Deletar linhas selecionadas",
+      }
+    }
+  };
 
-  // function exlcuirCompras(listaIds: number[]) {
-  //   setIsPageLoading(true);
-  //   if (listaIds.length == 1) {
-  //     excluirUnicaCompra(listaIds[0]);
-  //   } else {
-  //     excluirListasCompras(listaIds);
-  //   }
-  // }
+  function exlcuirCompras(listaIds: number[]) {
+    setIsPageLoading(true);
+    if (listaIds.length == 1) {
+      excluirUnicaCompra(listaIds[0]);
+    } else {
+      excluirListasCompras(listaIds);
+    }
+  }
 
-  // function excluirUnicaCompra(id: number) {
+  function excluirUnicaCompra(id: number) {
 
-  //   axios.delete<ResponseModel<any>>(apiURL + '/compras/delete', {
-  //     data: { "id": id }
-  //   }).then((response) => {
+    axios.delete<ResponseModel<any>>(apiURL + '/compras/delete', {
+      data: { "id": id }
+    }).then((response) => {
 
-  //     if (response.data.success) {
-  //       toast.success(response.data.message ? response.data.message : "Sucesso!", {
-  //         type: "success",
-  //         theme: "colored",
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //       });
-  //       listarCompras();
-  //       setIsPageLoading(false);
-  //     } else {
-  //       toast.error(response.data.message, {
-  //         type: "error",
-  //         theme: "colored",
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //       });
-  //       listarCompras();
-  //       setIsPageLoading(false);
-  //     }
+      if (response.data.success) {
+        toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          type: "success",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        setIsPageLoading(false);
+      } else {
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        setIsPageLoading(false);
+      }
 
-  //   }).catch((error) => {
-  //     console.log(error);
-  //     setIsPageLoading(false);
-  //   });
-  // }
+    }).catch((error) => {
+      console.log(error);
+      setIsPageLoading(false);
+    });
+  }
 
-  // function excluirListasCompras(listaids: number[]) {
-  //   axios.delete<ResponseModel<any>>(apiURL + '/compras/deleteporLista', {
-  //     data: { "listaids": listaids }
-  //   }).then((response) => {
+  function excluirListasCompras(listaids: number[]) {
+    axios.delete<ResponseModel<any>>(apiURL + '/compras/deleteporLista', {
+      data: { "listaids": listaids }
+    }).then((response) => {
 
-  //     if (response.data.success) {
-  //       toast.success(response.data.message ? response.data.message : "Sucesso!", {
-  //         type: "success",
-  //         theme: "colored",
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //       });
-  //       listarCompras();
-  //       setIsPageLoading(false);
-  //     } else {
-  //       toast.error(response.data.message, {
-  //         type: "error",
-  //         theme: "colored",
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //       });
-  //       listarCompras();
-  //       setIsPageLoading(false);
-  //     }
-  //   }).catch((error) => {
-  //     console.log(error);
-  //     setIsPageLoading(false);
-  //   });
-  // }
+      if (response.data.success) {
+        toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          type: "success",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        setIsPageLoading(false);
+      } else {
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        listarCompras();
+        setIsPageLoading(false);
+      }
+    }).catch((error) => {
+      console.log(error);
+      setIsPageLoading(false);
+    });
+  }
 
 
   function exlcuirVenda(listaIds: number[]) {
@@ -612,121 +612,9 @@ const Vendas = () => {
             <TabPanel value={value} index={0}>
               <VendasInterface vendas={vendas} column={column} options={options} authUser={userData} isLoadingMain={isLoading} />
             </TabPanel>
-            {/* <TabPanel value={value} index={1}>
-              <div>
-                <div className="row">
-                  <div className="col-md-12 p-3 alignBTN">
-                    {!openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Registrar Compra</button>}
-                    {openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Fechar</button>}
-                  </div>
-                </div>
-
-                {!isLoading && openModalAddCompras &&
-                  <form onSubmit={handleSubmit(onSubmitCompra)} className="my-4 p-4 border border-2">
-
-                    <div className="row">
-                      <div className="col-12 mb-3">
-                        <input type="hidden" value={userData?.Id} {...register("usuarioId")} />
-                        <label
-                          htmlFor="exampleInputPassword1"
-                          className="form-label"
-                        >Produto
-                        </label>
-                        <Autocomplete
-                          onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
-                            var produto = value as Produto;
-                            handleProductChange(produto);
-                          }}
-                          disablePortal
-                          value={ProdutoSelect}
-                          id="combo-box-demo"
-                          options={optionsSelect}
-                          renderInput={(params) => <TextField {...params} required={true} label="Produto" />}
-
-                        />
-                      </div>
-                    </div>
-
-                    <div className="row mb-2">
-                      <div className="col-4">
-                        <label htmlFor="dataCompra">Data da Compra</label>
-                        <input
-                          {...register("dataCompra", { required: { value: true, message: "Campo Necessário!" } })}
-                          type="date" className="form-control" name="dataCompra" />
-                      </div>
-                      <div className="col-4">
-                        <label htmlFor="quantidade">Quantidade</label>
-                        <input
-                          {...register("quantidade", { required: { value: true, message: "Campo Necessário!" } })}
-
-                          type="number" step={1} min={0} className="form-control" name="quantidade" />
-                      </div>
-                      <div className="col-4">
-                        <label htmlFor="quantidade">Forma Pagam.</label>
-                        <select
-                          {...register("formaPagamento", { required: { value: true, message: "Campo Necessário!" } })}
-                          className="form-control"
-
-                        >
-                          <option key={''} value={''}></option>
-                          <option key={1} value={0}>Dinheiro</option>
-                          <option key={2} value={1}>Crédito</option>
-                          <option key={3} value={2}>Débito</option>
-                          <option key={4} value={3}>Cheque</option>
-
-
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="row mb-3">
-                      <div className="col 8 mt-3">
-                        <Autocomplete
-                          onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
-                            var forn = value as Fornecedor;
-                            handleFornecedor(forn);
-                          }}
-
-                          value={fornecedoresSelect}
-                          disablePortal
-                          options={fornecedoresSelection}
-                          renderInput={(params) => <TextField {...params} required={true} label="Fornecedor" />}
-
-                        />
-                      </div>
-                      <div className="col-4">
-                        <label htmlFor="valorpago">Valor a ser Pago</label>
-                        <CurrencyInput
-                          id="input-example"
-                          decimalSeparator=","
-                          groupSeparator=""
-                          placeholder="R$ 0.00"
-                          intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
-                          {...register("valorCompraDisplay", { required: { value: true, message: "Campo Necessário!" } })}
-                          className={`form-control ${errors.precoDisplay?.message != null ? "is-invalid" : ""}`}
-                        >
-                        </CurrencyInput>
-                      </div>
-
-                    </div>
-
-
-                    <div className="d-flex justify-content-end align-items-end">
-                      <button className="btn btn-danger mx-1" type="button" onClick={ModalAddCompraCancelar}>Cancelar</button>
-                      <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>
-                    </div>
-                  </form>
-                }
-
-                <MUIDataTable
-                  title={"Compras"}
-                  data={compras}
-                  columns={comprasColumn}
-                  options={optionsCompra}
-                />
-              </div>
-              <button className="relat"> Gerar relatório </button>
-            </TabPanel> */}
+            <TabPanel value={value} index={1}>
+            {/* <ComprasInterface/> */}
+            </TabPanel>
           </Box>
         </Card>
       </div>
@@ -747,6 +635,10 @@ const VendasInterface = (props: any) => {
 
   const [dataInicial, setDataInicial] = useState<string>();
   const [dataFinal, setDataFinal] = useState<string>();
+
+  const _currencyService = new CurrencyService();
+  const [vendas, setVenda] = useState<Venda[]>([]);
+
 
   const { control, register, handleSubmit, reset, setValue: setValueControl, formState: { errors } } = useForm<{
     controls: {
@@ -787,6 +679,12 @@ const VendasInterface = (props: any) => {
       setIsLoading(props.isLoadingMain);
     }
   }, [props.isLoadingMain]);
+
+  useEffect(() => {
+    if (props.vendas) {
+      setVenda(props.vendas);
+    }
+  }, [props.vendas]);
 
   const getProdutos = async () => {
     setProdutos((prev: any) => ({
@@ -850,6 +748,33 @@ const VendasInterface = (props: any) => {
     }));
   }
 
+  async function listarVendas() {
+    await axios.post<ResponseModel<any[]>>(apiURL + "/vendas/listar", { "id": userData?.Id })
+      .then(async (response) => {
+        var novalista: Venda[] = [];
+
+
+        if (response.data.data != null) {
+          for await (const prod of response.data.data) {
+            // let clienteFound = clientes.find((x) => x.Id === prod.clienteId)
+            prod.formaPagamentoDisplay = FormaPagamentoEnum[prod.formaPagamento];
+            novalista.push({ ...prod, "clienteDesc": prod.cliente.nome });
+            // novalista.push(prod);
+          }
+        }
+
+        // setisLoading(false);
+        // setIsPageLoading(false);
+        // setVenda(novalista);
+        // reset();
+      }).catch((error) => {
+        // console.log(error);
+        // setisLoading(false);
+        // setIsPageLoading(false);
+      });
+  }
+
+
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
     control, // control props comes from useForm (optional: if you are using FormContext)
     name: "controls", // unique name for your Field Array
@@ -910,6 +835,54 @@ const VendasInterface = (props: any) => {
   const onSubmit = async (values: any) => {
     console.log(values);
 
+
+
+    for await (const cont of values.controls) {
+      cont.usuarioId = userData?.Id as number;
+      cont.valorTotal = _currencyService.Formatar(cont?.valorTotalDisplay as string);
+
+      const data = { ...cont, "cliente": cont.cliente };
+
+      await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar', { data: data })
+        .then((response) => {
+
+          // if (response.data.success) {
+          //   toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          //     type: "success",
+          //     theme: "colored",
+          //     position: "top-right",
+          //     autoClose: 5000,
+          //     hideProgressBar: false,
+          //     closeOnClick: true,
+          //     pauseOnHover: true,
+          //     draggable: true,
+          //     progress: undefined,
+          //   });
+          // } else {
+          //   toast.error(response.data.message, {
+          //     type: "error",
+          //     theme: "colored",
+          //     position: "top-right",
+          //     autoClose: 5000,
+          //     hideProgressBar: false,
+          //     closeOnClick: true,
+          //     pauseOnHover: true,
+          //     draggable: true,
+          //     progress: undefined,
+          //   });
+          // }
+
+          reset();
+          // setProdutoSelect(new Produto());
+          // setopenModalAddVenda(false)
+
+        }).catch((error: ResponseModel<any>) => {
+          console.log(error.message);
+        }).finally(function () {
+          // setisLoading(false);
+          listarVendas();
+        });
+    }
     // setisLoading(true);
 
     // if (userData?.Id == null) {
@@ -917,50 +890,7 @@ const VendasInterface = (props: any) => {
     // }
 
     // values.produtoId = ProdutoSelect.Id as number;
-    // values.usuarioId = userData?.Id as number;
-    // values.valorTotal = _currencyService.Formatar(values?.valorTotalDisplay as string);
 
-    // const data = { ...values, "cliente": ClienteSelect };
-
-    // await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar', { data: data })
-    //   .then((response) => {
-
-    //     if (response.data.success) {
-    //       toast.success(response.data.message ? response.data.message : "Sucesso!", {
-    //         type: "success",
-    //         theme: "colored",
-    //         position: "top-right",
-    //         autoClose: 5000,
-    //         hideProgressBar: false,
-    //         closeOnClick: true,
-    //         pauseOnHover: true,
-    //         draggable: true,
-    //         progress: undefined,
-    //       });
-    //     } else {
-    //       toast.error(response.data.message, {
-    //         type: "error",
-    //         theme: "colored",
-    //         position: "top-right",
-    //         autoClose: 5000,
-    //         hideProgressBar: false,
-    //         closeOnClick: true,
-    //         pauseOnHover: true,
-    //         draggable: true,
-    //         progress: undefined,
-    //       });
-    //     }
-
-    //     reset();
-    //     setProdutoSelect(new Produto());
-    //     setopenModalAddVenda(false)
-
-    //   }).catch((error: ResponseModel<any>) => {
-    //     console.log(error.message);
-    //   }).finally(function () {
-    //     setisLoading(false);
-    //     listarVendas();
-    //   });
   }
 
   return (
@@ -988,7 +918,7 @@ const VendasInterface = (props: any) => {
                 var errorControls = errors.controls;
                 // console.log(optionsSelect);
 
-                console.log(errorControls);
+      
 
                 return (
                   <Accordion key={item.id} defaultExpanded={true}>
@@ -1141,26 +1071,160 @@ const VendasInterface = (props: any) => {
             options={props.options}
           />
         )}
-             <div className="row my-5">
-                <div className="col-2">
-                  <label htmlFor="">Inicio</label>
-                  <input value={dataInicial} onChange={event => updateDataInicialValue(event)} className="form-control" type="date" placeholder="" />
-                </div>
-                <div className="col-2">
-                  <label htmlFor="">Final</label>
-                  <input value={dataFinal} onChange={event => updateDataFinalValue(event)} className="form-control" type="date" placeholder="" />
-                </div>
-                <div className="col-2">
-                  <button onClick={() => handleReportGenerate('venda')} className="relat">Gerar relatório</button>
-                </div>
-              </div>
+        <div className="row my-5">
+          <div className="col-2">
+            <label htmlFor="">Inicio</label>
+            <input value={dataInicial} onChange={event => updateDataInicialValue(event)} className="form-control" type="date" placeholder="" />
+          </div>
+          <div className="col-2">
+            <label htmlFor="">Final</label>
+            <input value={dataFinal} onChange={event => updateDataFinalValue(event)} className="form-control" type="date" placeholder="" />
+          </div>
+          <div className="col-2">
+            <button onClick={() => handleReportGenerate('venda')} className="relat">Gerar relatório</button>
+          </div>
+        </div>
       </div>
 
-      <button className="relat">Gerar relatório</button>
+      {/* <button className="relat">Gerar relatório</button> */}
     </>
   )
 }
 
+// const ComprasInterface = (props: any) => {
+//   const [openModalAddCompras, setOpenModalAddCompras] = useState(false);
+//   const [totalBrutoValue, setTotalBruto] = useState<number>(0);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [userData, setUserData] = useState<User>(new User());
+
+//   const dataProdutos: Produto[] = [];
+//   const [produtos, setProdutos] = useState<any>({ loading: false, d: dataProdutos });
+//   const dataClientes: Cliente[] = [];
+//   const [clientes, setClientes] = useState<any>({ loading: false, d: dataClientes });
+
+//   const [dataInicial, setDataInicial] = useState<string>();
+//   const [dataFinal, setDataFinal] = useState<string>();
+
+//   const _currencyService = new CurrencyService();
+//   const [vendas, setVenda] = useState<Venda[]>([]);
+
+//   return (
+   
+//  <div>
+//   <div className="row">
+//     <div className="col-md-12 p-3 alignBTN">
+//       {!openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Registrar Compra</button>}
+//       {openModalAddCompras && <button className="btn btn-primary" onClick={handlClickCompraOpen}> Fechar</button>}
+//     </div>
+//   </div>
+
+//   {!isLoading && openModalAddCompras &&
+//     <form onSubmit={handleSubmit(onSubmitCompra)} className="my-4 p-4 border border-2">
+
+//       <div className="row">
+//         <div className="col-12 mb-3">
+//           <input type="hidden" value={userData?.Id} {...register("usuarioId")} />
+//           <label
+//             htmlFor="exampleInputPassword1"
+//             className="form-label"
+//           >Produto
+//           </label>
+//           <Autocomplete
+//             onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
+//               var produto = value as Produto;
+//               handleProductChange(produto);
+//             }}
+//             disablePortal
+//             value={ProdutoSelect}
+//             id="combo-box-demo"
+//             options={optionsSelect}
+//             renderInput={(params) => <TextField {...params} required={true} label="Produto" />}
+
+//           />
+//         </div>
+//       </div>
+
+//       <div className="row mb-2">
+//         <div className="col-4">
+//           <label htmlFor="dataCompra">Data da Compra</label>
+//           <input
+//             {...register("dataCompra", { required: { value: true, message: "Campo Necessário!" } })}
+//             type="date" className="form-control" name="dataCompra" />
+//         </div>
+//         <div className="col-4">
+//           <label htmlFor="quantidade">Quantidade</label>
+//           <input
+//             {...register("quantidade", { required: { value: true, message: "Campo Necessário!" } })}
+
+//             type="number" step={1} min={0} className="form-control" name="quantidade" />
+//         </div>
+//         <div className="col-4">
+//           <label htmlFor="quantidade">Forma Pagam.</label>
+//           <select
+//             {...register("formaPagamento", { required: { value: true, message: "Campo Necessário!" } })}
+//             className="form-control"
+
+//           >
+//             <option key={''} value={''}></option>
+//             <option key={1} value={0}>Dinheiro</option>
+//             <option key={2} value={1}>Crédito</option>
+//             <option key={3} value={2}>Débito</option>
+//             <option key={4} value={3}>Cheque</option>
+
+
+//           </select>
+//         </div>
+//       </div>
+
+//       <div className="row mb-3">
+//         <div className="col 8 mt-3">
+//           <Autocomplete
+//             onChange={(event: React.SyntheticEvent, value: any, reason: any, details: any) => {
+//               var forn = value as Fornecedor;
+//               handleFornecedor(forn);
+//             }}
+
+//             value={fornecedoresSelect}
+//             disablePortal
+//             options={fornecedoresSelection}
+//             renderInput={(params) => <TextField {...params} required={true} label="Fornecedor" />}
+
+//           />
+//         </div>
+//         <div className="col-4">
+//           <label htmlFor="valorpago">Valor a ser Pago</label>
+//           <CurrencyInput
+//             id="input-example"
+//             decimalSeparator=","
+//             groupSeparator=""
+//             placeholder="R$ 0.00"
+//             intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
+//             {...register("valorCompraDisplay", { required: { value: true, message: "Campo Necessário!" } })}
+//             className={`form-control ${errors.precoDisplay?.message != null ? "is-invalid" : ""}`}
+//           >
+//           </CurrencyInput>
+//         </div>
+
+//       </div>
+
+
+//       <div className="d-flex justify-content-end align-items-end">
+//         <button className="btn btn-danger mx-1" type="button" onClick={ModalAddCompraCancelar}>Cancelar</button>
+//         <button className="btn btn-success mx-1" placeholder="" type="submit">Registrar Compra </button>
+//       </div>
+//     </form>
+//   }
+
+//   <MUIDataTable
+//     title={"Compras"}
+//     data={compras}
+//     columns={comprasColumn}
+//     options={optionsCompra}
+//   />
+// </div>
+
+//   );
+// }
 
 
 export default Vendas
