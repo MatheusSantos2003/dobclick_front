@@ -122,7 +122,7 @@ const Vendas = () => {
           for await (const prod of response.data.data) {
             // let fornecedorFound = fornecedores.find((x) => x.Id === prod.fornecedor.Id);
 
-            novalista.push({ ...prod, "fornecedorDesc": prod.fornecedor.descricao });
+            novalista.push({ ...prod});
             // novalista.push(prod);
           }
         }
@@ -723,51 +723,15 @@ const VendasInterface = (props: any) => {
   const onSubmit = async (values: any) => {
     console.log(values);
 
+    const array = [];
+
     for await (const cont of values.controls) {
       cont.usuarioId = userData?.Id as number;
       cont.valorTotal = _currencyService.Formatar(cont?.valorTotalDisplay as string);
 
       const data = { ...cont, "cliente": cont.cliente };
 
-      await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar', { data: data })
-        .then((response) => {
-
-          // if (response.data.success) {
-          //   toast.success(response.data.message ? response.data.message : "Sucesso!", {
-          //     type: "success",
-          //     theme: "colored",
-          //     position: "top-right",
-          //     autoClose: 5000,
-          //     hideProgressBar: false,
-          //     closeOnClick: true,
-          //     pauseOnHover: true,
-          //     draggable: true,
-          //     progress: undefined,
-          //   });
-          // } else {
-          //   toast.error(response.data.message, {
-          //     type: "error",
-          //     theme: "colored",
-          //     position: "top-right",
-          //     autoClose: 5000,
-          //     hideProgressBar: false,
-          //     closeOnClick: true,
-          //     pauseOnHover: true,
-          //     draggable: true,
-          //     progress: undefined,
-          //   });
-          // }
-
-          reset();
-          // setProdutoSelect(new Produto());
-          // setopenModalAddVenda(false)
-
-        }).catch((error: ResponseModel<any>) => {
-          console.log(error.message);
-        }).finally(function () {
-          // setisLoading(false);
-          listarVendas();
-        });
+      array.push(data);
     }
     // setisLoading(true);
 
@@ -776,6 +740,90 @@ const VendasInterface = (props: any) => {
     // }
 
     // values.produtoId = ProdutoSelect.Id as number;
+
+    if(array.length === 1){
+      await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar', { data: array[0] })
+      .then((response) => {
+
+        if (response.data.success) {
+          toast.success(response.data.message ? response.data.message : "Sucesso!", {
+            type: "success",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          toast.error(response.data.message, {
+            type: "error",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+
+        reset();
+        // setProdutoSelect(new Produto());
+        // setopenModalAddVenda(false)
+
+      }).catch((error: ResponseModel<any>) => {
+        console.log(error.message);
+      }).finally(function () {
+        // setisLoading(false);
+        listarVendas();
+      });
+
+
+    }else if(array.length > 1){
+
+      await axios.post<ResponseModel<Venda>>(apiURL + '/vendas/cadastrar-lista', { data: array })
+      .then((response) => {
+
+        if (response.data.success) {
+          toast.success(response.data.message ? response.data.message : "Sucesso!", {
+            type: "success",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          toast.error(response.data.message, {
+            type: "error",
+            theme: "colored",
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+
+        reset();
+        listarVendas();
+        // setProdutoSelect(new Produto());
+        // setopenModalAddVenda(false)
+
+      }).catch((error: ResponseModel<any>) => {
+        console.log(error.message);
+      })
+
+    }
 
   }
 
@@ -998,7 +1046,7 @@ const ComprasInterface = (props: any) => {
     controls: {
       usuarioId: any,
       produtoId: any,
-      datavenda: string,
+      datacompra: string,
       quantidade: string,
       formaPag: string,
       fornecedor: any,
@@ -1011,7 +1059,7 @@ const ComprasInterface = (props: any) => {
         {
           usuarioId: null,
           produtoId: null,
-          datavenda: '',
+          datacompra: '',
           quantidade: '',
           formaPag: '',
           fornecedor: null,
@@ -1112,60 +1160,63 @@ const ComprasInterface = (props: any) => {
 
   const onSubmitCompras = async (values: any) => {
     console.log(values);
+    let dataToSend = [];
 
     for await (const cont of values.controls) {
       cont.usuarioId = userData?.Id as number;
       cont.valorTotal = _currencyService.Formatar(cont?.valorTotalDisplay as string);
 
-      const data = { ...cont, "cliente": cont.cliente };
+      dataToSend.push({ ...cont, "fornecedor": cont.fornecedor });
 
-      //   await axios.post<ResponseModel<any>>(apiURL + '/compras/cadastrar', {
-      //     data: data
-      //   }).then((response) => {
-
-      //     if (response.data.success) {
-      //       toast.success(response.data.message ? response.data.message : "Sucesso!", {
-      //         type: "success",
-      //         theme: "colored",
-      //         position: "top-right",
-      //         autoClose: 5000,
-      //         hideProgressBar: false,
-      //         closeOnClick: true,
-      //         pauseOnHover: true,
-      //         draggable: true,
-      //         progress: undefined,
-      //       });
-      //       listarCompras();
-      //       reset();
-      //       setProdutoSelect(new Produto());
-      //       setisLoading(false);
-      //       setOpenModalAddCompras(false)
-      //     } else {
-      //       toast.error(response.data.message, {
-      //         type: "error",
-      //         theme: "colored",
-      //         position: "top-right",
-      //         autoClose: 5000,
-      //         hideProgressBar: false,
-      //         closeOnClick: true,
-      //         pauseOnHover: true,
-      //         draggable: true,
-      //         progress: undefined,
-      //       });
-      //       listarCompras();
-      //       reset();
-      //       setProdutoSelect(new Produto());
-      //       setisLoading(false);
-      //       setOpenModalAddCompras(false)
-      //     }
-      //   })
-      // .catch((error: ResponseModel<any>) => {
-      //         console.log(error.message);
-      //       }).finally(function () {
-      //         // setisLoading(false);
-      //         listarVendas();
-      //       });
+       
     }
+
+    await axios.post<ResponseModel<any>>(apiURL + '/compras/cadastrar-lista', {
+      data: dataToSend
+    }).then((response) => {
+
+      if (response.data.success) {
+        toast.success(response.data.message ? response.data.message : "Sucesso!", {
+          type: "success",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        // listarCompras();
+        reset();
+        // setProdutoSelect(new Produto());
+        // setisLoading(false);
+        setOpenModalAddCompras(false)
+      } else {
+        toast.error(response.data.message, {
+          type: "error",
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        // listarCompras();
+        reset();
+        // setProdutoSelect(new Produto());
+        // setisLoading(false);
+        setOpenModalAddCompras(false)
+      }
+    })
+  .catch((error: ResponseModel<any>) => {
+          console.log(error.message);
+        }).finally(function () {
+          // setisLoading(false);
+          // listarVendas();
+        });
     // setisLoading(true);
 
     // if (userData?.Id == null) {
@@ -1279,14 +1330,14 @@ const ComprasInterface = (props: any) => {
                           }
                         </div>
                         <div className="col-4 mb-3">
-                          <label className="form-label">Data de Venda</label>
+                          <label className="form-label">Data de Compra</label>
                           <input
-                            {...register(`controls.${index}.datavenda`, { required: { value: true, message: "Campo Necessário!" } })}
+                            {...register(`controls.${index}.datacompra`, { required: { value: true, message: "Campo Necessário!" } })}
                             type="date"
-                            className={`form-control ${errorControls && errorControls[index]?.datavenda != null ? "is-invalid" : ""}`}
+                            className={`form-control ${errorControls && errorControls[index]?.datacompra != null ? "is-invalid" : ""}`}
                           />
-                          {errorControls && errorControls[index]?.datavenda &&
-                            <p className="text-danger">{errorControls && errorControls[index]?.datavenda?.message}</p>
+                          {errorControls && errorControls[index]?.datacompra &&
+                            <p className="text-danger">{errorControls && errorControls[index]?.datacompra?.message}</p>
                           }
                         </div>
                         <div className="col-4 mb-3">
@@ -1365,7 +1416,7 @@ const ComprasInterface = (props: any) => {
                 <button className="btn btn-primary mx-1" type="button" onClick={() => append({
                   usuarioId: 0,
                   produtoId: '',
-                  datavenda: '',
+                  datacompra: '',
                   quantidade: '',
                   formaPag: '',
                   fornecedor: {},
