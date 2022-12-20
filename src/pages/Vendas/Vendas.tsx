@@ -893,6 +893,11 @@ const VendasInterface = (props: any) => {
 
   }
 
+
+
+
+  
+
   return (
     <>
       <div>
